@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include <typeinfo.h> // Using RTTI
+#include <typeinfo> // Using RTTI
 
 namespace TL    // Namespace for TypeLists
 {
@@ -61,12 +61,12 @@ namespace TL    // Namespace for TypeLists
         enum {value = -1};
     };
     template <typename Tail, typename T>
-    struct IndexOf<TypeList<T, Tail>, typename T>
+    struct IndexOf<TypeList<T, Tail>, T>
     {
         enum {value = 0};
     };
     template <typename Head, typename Tail, typename T>
-    struct IndexOf<TypeList<Head, Tail>, typename T>
+    struct IndexOf<TypeList<Head, Tail>, T>
     {
     private: 
         enum {temp = IndexOf<Tail, T>::value};
@@ -154,26 +154,26 @@ int main(int argc, char* argv[])
     cout << "SignedIntegral at index = 3 contains type = " << typeid(TypeAt<SignedIntegrals, 3>::Result).name() << endl;
 
     // Example of searching type index by type name
-    cout << "Index of 'int' type in SignedIntegral TypeList = " << IndexOf<SignedIntegrals, int>::value << endl;
+    cout << "Index of 'int' type in SignedIntegral TypeList = " << IndexOf<SignedIntegrals, int >::value << endl;
 
     // Example of appending 1 TypeList to another
     typedef Append<CharList, SignedIntegrals>::Result MergedTypeList;
-    cout << "mergedTypeList at index = 0 contains type = " << typeid(TypeAt<typename MergedTypeList, 0>::Result).name() << endl;
-    cout << "mergedTypeList at index = 1 contains type = " << typeid(TypeAt<typename MergedTypeList, 1>::Result).name() << endl;
-    cout << "mergedTypeList at index = 2 contains type = " << typeid(TypeAt<typename MergedTypeList, 2>::Result).name() << endl;
-    cout << "mergedTypeList at index = 3 contains type = " << typeid(TypeAt<typename MergedTypeList, 3>::Result).name() << endl;
-    cout << "mergedTypeList at index = 4 contains type = " << typeid(TypeAt<typename MergedTypeList, 4>::Result).name() << endl;
-    cout << "mergedTypeList at index = 5 contains type = " << typeid(TypeAt<typename MergedTypeList, 5>::Result).name() << endl;
-    cout << "mergedTypeList at index = 6 contains type = " << typeid(TypeAt<typename MergedTypeList, 6>::Result).name() << endl;
+    cout << "mergedTypeList at index = 0 contains type = " << typeid(TypeAt<MergedTypeList, 0>::Result).name() << endl;
+    cout << "mergedTypeList at index = 1 contains type = " << typeid(TypeAt<MergedTypeList, 1>::Result).name() << endl;
+    cout << "mergedTypeList at index = 2 contains type = " << typeid(TypeAt<MergedTypeList, 2>::Result).name() << endl;
+    cout << "mergedTypeList at index = 3 contains type = " << typeid(TypeAt<MergedTypeList, 3>::Result).name() << endl;
+    cout << "mergedTypeList at index = 4 contains type = " << typeid(TypeAt<MergedTypeList, 4>::Result).name() << endl;
+    cout << "mergedTypeList at index = 5 contains type = " << typeid(TypeAt<MergedTypeList, 5>::Result).name() << endl;
+    cout << "mergedTypeList at index = 6 contains type = " << typeid(TypeAt<MergedTypeList, 6>::Result).name() << endl;
 
     // Example of erasing type from TypeList
     typedef Erase<MergedTypeList, signed char>::Result TypeListAfterErase;
-    cout << "TypeListAfterErase at index = 0 contains type = " << typeid(TypeAt<typename TypeListAfterErase, 0>::Result).name() << endl;
-    cout << "TypeListAfterErase at index = 1 contains type = " << typeid(TypeAt<typename TypeListAfterErase, 1>::Result).name() << endl;
-    cout << "TypeListAfterErase at index = 2 contains type = " << typeid(TypeAt<typename TypeListAfterErase, 2>::Result).name() << endl;
-    cout << "TypeListAfterErase at index = 3 contains type = " << typeid(TypeAt<typename TypeListAfterErase, 3>::Result).name() << endl;
-    cout << "TypeListAfterErase at index = 4 contains type = " << typeid(TypeAt<typename TypeListAfterErase, 4>::Result).name() << endl;
-    cout << "TypeListAfterErase at index = 5 contains type = " << typeid(TypeAt<typename TypeListAfterErase, 5>::Result).name() << endl;
+    cout << "TypeListAfterErase at index = 0 contains type = " << typeid(TypeAt<TypeListAfterErase, 0>::Result).name() << endl;
+    cout << "TypeListAfterErase at index = 1 contains type = " << typeid(TypeAt<TypeListAfterErase, 1>::Result).name() << endl;
+    cout << "TypeListAfterErase at index = 2 contains type = " << typeid(TypeAt<TypeListAfterErase, 2>::Result).name() << endl;
+    cout << "TypeListAfterErase at index = 3 contains type = " << typeid(TypeAt<TypeListAfterErase, 3>::Result).name() << endl;
+    cout << "TypeListAfterErase at index = 4 contains type = " << typeid(TypeAt<TypeListAfterErase, 4>::Result).name() << endl;
+    cout << "TypeListAfterErase at index = 5 contains type = " << typeid(TypeAt<TypeListAfterErase, 5>::Result).name() << endl;
 
     return 0;
 }
