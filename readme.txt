@@ -1,1 +1,1 @@
-this is Hello World repository to lern GIT
+This is Hello World repository to learn GIT
