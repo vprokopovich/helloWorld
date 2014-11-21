@@ -1,2 +1,2 @@
 cd Solutions
-cmake ..\src\helloWorld\
+cmake ..\src\
