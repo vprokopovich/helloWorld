@@ -68,7 +68,7 @@ namespace TL    // Namespace for TypeLists
     template <typename Head, typename Tail, typename T>
     struct IndexOf<TypeList<Head, Tail>, T>
     {
-    private: 
+    private:
         enum {temp = IndexOf<Tail, T>::value};
     public:
         enum {value = (temp == -1) ? -1 : 1 + temp};
@@ -132,7 +132,43 @@ namespace TL    // Namespace for TypeLists
     {
         typedef TypeList<Head, typename EraseAll<Tail,T>::Result> Result;
     };
+
+    //Erasing all duplicates //3.10
+    template <typename TList> struct NoDuplicates;
+    template <>
+    struct NoDuplicates<NullType>
+    {
+        typedef NullType Result;
+    };
+    template <typename Head, typename Tail>
+    struct NoDuplicates<TypeList<Head, Tail> >
+    {
+    private: 
+        typedef typename NoDuplicates<Tail>::Result L1;
+        typedef typename Erase<L1, Tail>::Result L2;
+    public:
+        typedef TypeList<Head, L2> Result;
+    };
+
+    // Replace
+    template <typename TList, typename T, typename U> struct Replace;
+    template <typename T, typename U>
+    struct Replace<NullType, T, U>
+    {
+        typedef NullType Result;
+    };
+    template <typename T, typename U, typename ListTail>
+    struct Replace<TypeList<T, ListTail>, T, U>
+    {
+        typedef TypeList<U, ListTail> Result;
+    };
+    template <typename T, typename U, typename ListHead, typename ListTail>
+    struct Replace<TypeList<ListHead, ListTail>, T, U>
+    {
+        typedef TypeList<ListHead, typename Replace<ListTail, T, U>::Result> Result;
+    };
 } // namespace TL
+
 
 using namespace std;
 using namespace TL;
