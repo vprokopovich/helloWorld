@@ -1,3 +1,6 @@
+#ifndef SRC_THREADPOOL_WORKER_H
+#define SRC_THREADPOOL_WORKER_H
+
 #include <functional>
 #include <thread>
 #include <queue>
@@ -11,42 +14,24 @@ class Worker
 {    
 public:
 
-    Worker()
-        :enabled(true),fqueue()
-        ,thread(&Worker::thread_fn, this)
-    {}
-    ~Worker()
-    {
-        enabled = false;
-        cv.notify_one();	
-        thread.join();
-    }
-    void appendFn(fn_type fn)
-    {
-        std::unique_lock<std::mutex> locker(mutex);
-        fqueue.push(fn);			
-        cv.notify_one();
-    }
-    size_t getTaskCount() 		
-    { 
-        std::unique_lock<std::mutex> locker(mutex);
-        return fqueue.size();		
-    }
-    bool   isEmpty() 			
-    { 
-        std::unique_lock<std::mutex> locker(mutex);
-        return fqueue.empty();	
-    }
+    Worker();
+    ~Worker();
+
+    void appendFn(fn_type fn);
+    size_t getTaskCount();
+    bool isEmpty();
 
 private:
 
-    std::condition_variable		cv;
-    std::queue<fn_type>			fqueue;
-    std::mutex				mutex;
-    std::thread				thread;
-    bool				enabled;	
+    std::condition_variable	cv;
+    std::queue<fn_type>	    fqueue;
+    std::mutex              mutex;
+    std::thread	            thread;
+    bool                    enabled;	
 
     void thread_fn();
 };
 
 typedef std::shared_ptr<Worker> worker_ptr;
+
+#endif // SRC_THREADPOOL_WORKER_H
