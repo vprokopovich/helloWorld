@@ -11,7 +11,7 @@ void foo()
 }
 void foo2(int i, float f)	
 { 
-    TRC_DEBUG("foo(%d, %d)",i, f);
+    TRC_DEBUG("foo(%d, %f)",i, f);
 }
 struct Baz
 {

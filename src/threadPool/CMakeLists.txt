@@ -12,6 +12,13 @@ set(SOURCES
         ThreadPool.cpp
 		Worker.cpp
 )
+set(LIBRARIES
+		Trace
+)
+
+IF(OS_LINUX)
+   set(LIBRARIES ${LIBRARIES} pthread)
+ENDIF(OS_LINUX)
 
 add_executable(ThreadPool ${HEADERS} ${SOURCES})
-target_link_libraries(ThreadPool Trace)
+target_link_libraries(ThreadPool ${LIBRARIES})

@@ -172,7 +172,7 @@ CTrace::tByte CTrace::getMappedThreadId()
     const std::size_t threadId = std::this_thread::get_id().hash();
 #endif
 #ifndef OS_WINDOWS
-    auto threadId = pthread_self();//static_cast<std::size_t>(*pthread_self());
+    auto threadId = pthread_self();
 #endif 
     if (mThreadIdMap.end() == mThreadIdMap.find(threadId))
     {
