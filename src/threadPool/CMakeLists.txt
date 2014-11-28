@@ -14,3 +14,4 @@ set(SOURCES
 )
 
 add_executable(ThreadPool ${HEADERS} ${SOURCES})
+target_link_libraries(ThreadPool Trace)
