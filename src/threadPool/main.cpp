@@ -1,26 +1,27 @@
 #include <iostream>
 #include "ThreadPool.h"
 #include "Worker.h"
+#include <CTrace.h>
 
 // Inspired by http://habrahabr.ru/post/188234/
 
 void foo()					
 { 
-    std::cout << "foo()" << std::endl; 
+    TRC_DEBUG("foo()");
 }
 void foo2(int i, float f)	
 { 
-    std::cout << "foo2(" << i << ", " << f << ")" << std::endl; 
+    TRC_DEBUG("foo(%d, %d)",i, f);
 }
 struct Baz
 {
     void bar() 
     { 
-        std::cout << "Baz::bar()" << std::endl; 
+        TRC_DEBUG("Baz::bar()");
     }
     void bar2(double d, const std::string &str) 
     { 
-        std::cout << "Baz::bar2(" << d << ", " << str.c_str() << ")" << std::endl; 
+        TRC_DEBUG("Baz::bar2(%f, %s)", d, str.c_str());
     }
 };
 
@@ -33,7 +34,7 @@ int main()
 
     std::function<void(int,int)> myFn = [&](int a, int b)
     { 
-        std::cout << "functor(" << a << ", " << b << ")" << std::endl;
+        TRC_DEBUG("functor(%d, %d)", a, b);
      };
 
     // Вызов простой функции
@@ -45,7 +46,10 @@ int main()
     // Вызов метода класса с аргументами *
     pool.runAsync(&Baz::bar2,&baz,400.3,"Hello World!");
     // Вызов лямбда функции
-    pool.runAsync([](){ std::cout << "lambda()" << std::endl; });
+    pool.runAsync([]()
+    {
+        TRC_DEBUG("lambda()");
+    });
     // Вызов функтора
     pool.runAsync(myFn,10,20);
 }

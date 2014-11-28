@@ -16,6 +16,8 @@
 #define BEGIN_COUNT                 CTrace::getInstance()->beginTimeCount()
 #define END_COUNT(beginTime, desc)  CTrace::getInstance()->endTimeCount(beginTime, desc)
 
+#include <mutex>
+
 class CTrace
 {
 public:
@@ -42,6 +44,7 @@ private:
    
    static CTrace* mpInstance;
    int mTraceLevel;
+   std::mutex mMutex;
 };
 
 #endif // CTrace_HPP
