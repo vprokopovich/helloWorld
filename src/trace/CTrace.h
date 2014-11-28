@@ -19,6 +19,10 @@
 #include <mutex>
 #include <map>
 
+#ifndef OS_WINDOWS
+    #include <pthread.h>
+#endif
+
 class CTrace
 {
 public:
@@ -53,8 +57,12 @@ private:
     */
    tByte getMappedThreadId();
 
-   
-   typedef std::map<std::size_t, tByte> tThreadIdMap;
+   #ifdef OS_WINDOWS
+      typedef std::map<std::size_t, tByte> tThreadIdMap;
+   #endif
+   #ifndef OS_WINDOWS
+      typedef std::map<pthread_t, tByte> tThreadIdMap;
+   #endif
    
    static CTrace* mpInstance;
    int mTraceLevel;

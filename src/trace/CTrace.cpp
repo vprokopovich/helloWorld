@@ -2,13 +2,16 @@
 #include "CTrace.h"
 
 // System includes
-#ifdef OS_LINUX
+#include <stdio.h>  
+#include <stdarg.h>
+#ifdef OS_WINDOWS
+    #include <thread>
+#endif
+#ifndef OS_WINDOWS
+    #include <pthread.h>
     #include <sys/time.h> 
     #include <unistd.h>
 #endif
-#include <stdio.h>  
-#include <stdarg.h>
-#include <thread>
 
 CTrace* CTrace::mpInstance = 0;
 
@@ -43,7 +46,7 @@ void CTrace::traceDebug(const char * format,...)
 #ifdef OS_WINDOWS
       printf("[DEBUG][%u]: ", getMappedThreadId());
 #endif
-#ifdef OS_LINUX
+#ifndef OS_WINDOWS
       printf("\n\033[0;40;1;32m[DEBUG][%u]\033[0m: ", getMappedThreadId());    // Uncomment this to make debug messages highlighted with green
 #endif
 
@@ -165,7 +168,12 @@ long CTrace::endTimeCount(double beginTime, const char * desc)
 
 CTrace::tByte CTrace::getMappedThreadId()
 {
+#ifdef OS_WINDOWS
     const std::size_t threadId = std::this_thread::get_id().hash();
+#endif
+#ifndef OS_WINDOWS
+    auto threadId = pthread_self();//static_cast<std::size_t>(*pthread_self());
+#endif 
     if (mThreadIdMap.end() == mThreadIdMap.find(threadId))
     {
         mThreadIdMap[threadId] = mThreadIdCounter++;

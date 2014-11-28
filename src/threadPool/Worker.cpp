@@ -2,9 +2,11 @@
 #include <CTrace.h>
 
 Worker::Worker()
-: enabled(true)
+: cv()
 , fqueue()
+, mutex()
 , thread(&Worker::thread_fn, this)
+, enabled(true)
 {
 }
 

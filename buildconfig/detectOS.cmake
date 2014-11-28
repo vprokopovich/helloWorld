@@ -41,3 +41,7 @@ ENDIF(OS_LINUX)
 IF(OS_WINDOWS)
    add_definitions( -DOS_WINDOWS )
 ENDIF(OS_WINDOWS)
+
+IF(OS_MACOS)
+   add_definitions( -DOS_MACOS )
+ENDIF(OS_MACOS)
