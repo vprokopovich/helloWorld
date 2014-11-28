@@ -27,19 +27,23 @@ struct Baz
 
 int main()
 {
-    ThreadPool pool(3); // Pool is created with 3 threads
+    ThreadPool pool(4); // Pool is created with 3 threads
 
     Baz* pBaz = new Baz();
     Baz baz;
 
     std::function<void(int,int)> myFn = [&](int a, int b)
     { 
+        size_t value = 0;
+        for (size_t i = 0; i < UINT32_MAX/4; i++)
+        {
+            value++;
+        }
         TRC_DEBUG("functor(%d, %d)", a, b);
-     };
+    };
 
     for (int i = 0; i < 10; i++)
     {
-
         // Вызов простой функции
         pool.runAsync(&foo);
         // Вызов функции с аргументами
@@ -53,7 +57,10 @@ int main()
         {
             TRC_DEBUG("lambda()");
         });
+
         // Вызов функтора
         pool.runAsync(myFn, 10, 20);
     }
+
+    TRC_DEBUG("Added all tasks to thread pool");
 }
