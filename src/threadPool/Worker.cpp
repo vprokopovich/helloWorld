@@ -1,13 +1,17 @@
 #include "Worker.h"
+#include <CTrace.h>
 
 Worker::Worker()
 : enabled(true)
 , fqueue()
 , thread(&Worker::thread_fn, this)
-{}
+{
+    TRC_DEBUG("Worker::Worker()");
+}
 
 Worker::~Worker()
 {
+    TRC_DEBUG("Worker::~Worker()");
     enabled = false;
     cv.notify_one();
     thread.join();
@@ -15,6 +19,7 @@ Worker::~Worker()
 
 void Worker::appendFn(fn_type fn)
 {
+    TRC_DEBUG("Worker::appendFn()");
     std::unique_lock<std::mutex> locker(mutex);
     fqueue.push(fn);
     cv.notify_one();
@@ -22,18 +27,21 @@ void Worker::appendFn(fn_type fn)
 
 size_t Worker::getTaskCount()       
 { 
+    TRC_DEBUG("Worker::getTaskCount()");
     std::unique_lock<std::mutex> locker(mutex);
     return fqueue.size();
 }
 
 bool Worker::isEmpty()
 { 
+    TRC_DEBUG("Worker::isEmpty()");
     std::unique_lock<std::mutex> locker(mutex);
     return fqueue.empty();  
 }
 
 void Worker::thread_fn()
 {
+    TRC_DEBUG("Worker::thread_fn()");
     while (enabled)
     {
         std::unique_lock<std::mutex> locker(mutex);

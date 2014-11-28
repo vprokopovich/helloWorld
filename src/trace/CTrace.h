@@ -17,6 +17,7 @@
 #define END_COUNT(beginTime, desc)  CTrace::getInstance()->endTimeCount(beginTime, desc)
 
 #include <mutex>
+#include <map>
 
 class CTrace
 {
@@ -36,15 +37,30 @@ public:
    static CTrace* getInstance();
 
 private:
+   typedef unsigned char tByte;
+
    /**
     * @brief Constructor
     * @param level Desired level of traces. For different variats please refer to defines at the top of this hpp file
     */ 
    CTrace(int level = TRC_LEVEL_DEBUG);
+
+   /**
+    * @brief Gets Current thread id and looks to map in order to find mapped id value
+    *        This value is displayed in traces as 'thread' id
+    *        Motivation is real thread ids are very long and it is not convinient to
+    *        debug program using them
+    */
+   tByte getMappedThreadId();
+
+   
+   typedef std::map<std::size_t, tByte> tThreadIdMap;
    
    static CTrace* mpInstance;
    int mTraceLevel;
    std::mutex mMutex;
+   tThreadIdMap mThreadIdMap;
+   tByte        mThreadIdCounter;
 };
 
 #endif // CTrace_HPP

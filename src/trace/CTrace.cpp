@@ -8,12 +8,15 @@
 #endif
 #include <stdio.h>  
 #include <stdarg.h>
+#include <thread>
 
 CTrace* CTrace::mpInstance = 0;
 
 CTrace::CTrace(int level)
 : mTraceLevel(level)
 , mMutex()
+, mThreadIdMap()
+, mThreadIdCounter(0)
 {
 }
 
@@ -36,8 +39,14 @@ void CTrace::traceDebug(const char * format,...)
    {
       mMutex.lock();
       va_list ap;
-      printf("[DEBUG]: ");
-      //printf("\n\033[0;40;1;32m[DEBUG]\033[0m: ");    // Uncomment this to make debug messages highlighted with green
+      
+#ifdef OS_WINDOWS
+      printf("[DEBUG][%u]: ", getMappedThreadId());
+#endif
+#ifdef OS_LINUX
+      printf("\n\033[0;40;1;32m[DEBUG][%u]\033[0m: ", getMappedThreadId());    // Uncomment this to make debug messages highlighted with green
+#endif
+
       va_start(ap,format);
       vprintf(format,ap);
       va_end(ap);
@@ -152,4 +161,15 @@ long CTrace::endTimeCount(double beginTime, const char * desc)
 #endif
    
    return static_cast<long>(timeInterval);
+}
+
+CTrace::tByte CTrace::getMappedThreadId()
+{
+    const std::size_t threadId = std::this_thread::get_id().hash();
+    if (mThreadIdMap.end() == mThreadIdMap.find(threadId))
+    {
+        mThreadIdMap[threadId] = mThreadIdCounter++;
+    }
+
+    return mThreadIdMap[threadId];
 }

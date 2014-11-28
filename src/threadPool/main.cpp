@@ -27,7 +27,7 @@ struct Baz
 
 int main()
 {
-    ThreadPool pool;
+    ThreadPool pool(3); // Pool is created with 3 threads
 
     Baz* pBaz = new Baz();
     Baz baz;
@@ -37,19 +37,23 @@ int main()
         TRC_DEBUG("functor(%d, %d)", a, b);
      };
 
-    // Вызов простой функции
-    pool.runAsync(&foo);
-    // Вызов функции с аргументами
-    pool.runAsync(&foo2,100,54.5f);
-    // Вызов метода класса, указатель на класс передаем 2м аргументом
-    pool.runAsync(&Baz::bar,pBaz);
-    // Вызов метода класса с аргументами *
-    pool.runAsync(&Baz::bar2,&baz,400.3,"Hello World!");
-    // Вызов лямбда функции
-    pool.runAsync([]()
+    for (int i = 0; i < 10; i++)
     {
-        TRC_DEBUG("lambda()");
-    });
-    // Вызов функтора
-    pool.runAsync(myFn,10,20);
+
+        // Вызов простой функции
+        pool.runAsync(&foo);
+        // Вызов функции с аргументами
+        pool.runAsync(&foo2, 100, 54.5f);
+        // Вызов метода класса, указатель на класс передаем 2м аргументом
+        pool.runAsync(&Baz::bar, pBaz);
+        // Вызов метода класса с аргументами *
+        pool.runAsync(&Baz::bar2, &baz, 400.3, "Hello World!");
+        // Вызов лямбда функции
+        pool.runAsync([]()
+        {
+            TRC_DEBUG("lambda()");
+        });
+        // Вызов функтора
+        pool.runAsync(myFn, 10, 20);
+    }
 }
