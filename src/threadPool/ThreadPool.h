@@ -11,7 +11,7 @@ public:
     ThreadPool(size_t threads = 1);
     ~ThreadPool();
 
-    template<class _FN, class... _ARGS>
+    template<typename _FN, typename ... _ARGS>
     void runAsync(_FN _fn, _ARGS... _args)
     {
         getFreeWorker()->appendFn(std::bind(_fn,_args...));

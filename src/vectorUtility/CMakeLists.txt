@@ -1,3 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(VectorUtility)
-add_executable(VectorUtility VectorUtility.cpp)
+
+set(HEADERS
+)
+set(SOURCES
+		VectorUtility.cpp
+)
+
+add_executable(VectorUtility ${HEADERS} ${SOURCES})

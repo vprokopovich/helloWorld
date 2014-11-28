@@ -20,7 +20,7 @@ struct Baz
     }
     void bar2(double d, const std::string &str) 
     { 
-        std::cout << "Baz::bar2(" << d << ", " << str << ")" << std::endl; 
+        std::cout << "Baz::bar2(" << d << ", " << str.c_str() << ")" << std::endl; 
     }
 };
 
