@@ -21,4 +21,5 @@ IF(OS_LINUX)
 ENDIF(OS_LINUX)
 
 add_executable(ThreadPool ${HEADERS} ${SOURCES})
+add_library(libThreadPool STATIC ${SOURCES})
 target_link_libraries(ThreadPool ${LIBRARIES})
