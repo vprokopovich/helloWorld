@@ -16,5 +16,7 @@ set(SOURCES
 		#os_win32.c
 )
 
+SET(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/../products/lib")
+
 #add_library(libfcgi STATIC ${SOURCES})
 add_library(fcgi SHARED ${SOURCES})

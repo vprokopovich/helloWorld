@@ -6,6 +6,7 @@
 int main(void)
 {
     int count = 0;
+
     while(FCGI_Accept() >= 0)
         printf("Content-type: text/html\r\n"
                "\r\n"
@@ -13,6 +14,7 @@ int main(void)
                "<h1>FastCGI Hello!</h1>"
                "Request number %d running on host <i>%s</i>\n",
                 ++count, getenv("SERVER_NAME"));
+
     return 0;
 }
 

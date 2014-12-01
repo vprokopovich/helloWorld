@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 project(Trace)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall") #to turn on c++ 11 features
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--rpath -Wl,${CMAKE_LIBRARY_OUTPUT_DIRECTORY}") #to link with libfcgi
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--rpath -Wl,${CMAKE_LIBRARY_OUTPUT_DIRECTORY}") #to link with libfcgi
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_LIBRARY_OUTPUT_DIRECTORY}") #to link with libfcgi
 
-include_directories(../../3rdparty/fcgi-2.4.1-SNAP-0311112127/include) #FastCGI library includes
+include_directories(${CMAKE_BINARY_DIR}/../3rdparty/fcgi-2.4.1-SNAP-0311112127/include) #FastCGI library includes
 
 set(HEADERS
 #        CTrace.h
