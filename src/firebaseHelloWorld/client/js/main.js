@@ -4,8 +4,8 @@ var state = null;
 
 $(document).ready(function()
 {
-    msgPool = new Firebase('https://heater-contol.firebaseio.com/msg-pool/');
-    state   = new Firebase('https://heater-contol.firebaseio.com/state/');
+    msgPool = new Firebase('https://heater-control.firebaseio.com/msg-pool/');
+    state   = new Firebase('https://heater-control.firebaseio.com/state/');
 
     state.on('value', handleStateChanged);
     msgPool.on('child_removed', handleMsgResponse);
