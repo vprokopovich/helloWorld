@@ -1,6 +1,8 @@
 var requests = new Object();
 var msgPool = null;
 var state = null;
+var targetTemperatureTimer = null;
+var halfCircularSlider = null;
 
 $(document).ready(function()
 {
@@ -12,6 +14,28 @@ $(document).ready(function()
     msgPool.on('child_added', handleMsgRequest);
 
     $("input#txtTargetTemp").change(onTargetTemperatureChange);
+
+/*
+    halfCircularSlider = $('#slider').CircularSlider({ 
+        min : 17, 
+        max: 40, 
+        value : 24,
+        radius: 95,
+        labelSuffix: "&deg;",
+        shape: "Half Circle",
+        slide: function(el, value)
+        {
+            if (null == targetTemperatureTimer)
+            {
+                targetTemperatureTimer = setTimeout(function(){}, 10);
+                return;
+            }
+            clearTimeout(targetTemperatureTimer);
+            targetTemperatureTimer = setTimeout(function(){onTargetTemperatureChange(value);}, 500);
+        }
+    });
+*/
+
 });
 
 function handleStateChanged(snapshot)
@@ -37,9 +61,34 @@ function handleMsgRequest(childSnapshot, prevChildName)
 function updateView(status, temperature, targetTemperature, targetTime, timerActivated)
 {
     $("div#lblStatus").html(status);
-    $("div#lblTemp").html(temperature);
+    $("div#lblTemp").html(temperature + "&deg;");
     $("input#txtTargetTemp").val(targetTemperature);
     $("input#txtTargetTime").val(targetTime);
+
+    var minTemp = 17;
+    var maxTemp = 40;
+    var tempToSet = Math.round(targetTemperature);
+    if (tempToSet < minTemp) tempToSet = minTemp;
+    if (tempToSet > maxTemp) tempToSet = maxTemp;
+
+    halfCircularSlider = $('#slider').CircularSlider({ 
+        min : 17, 
+        max: 40, 
+        value : tempToSet,
+        radius: 93,
+        labelSuffix: "&deg;",
+        shape: "Half Circle",
+        slide: function(el, value)
+        {
+            if (null == targetTemperatureTimer)
+            {
+                targetTemperatureTimer = setTimeout(function(){}, 10);
+                return;
+            }
+            clearTimeout(targetTemperatureTimer);
+            targetTemperatureTimer = setTimeout(function(){onTargetTemperatureChange(value);}, 500);
+        }
+    });
 }
 
 function updateViewProcessingRequests()
@@ -56,10 +105,13 @@ function updateViewProcessingRequests()
     }    
 }
 
-function onTargetTemperatureChange()
+function onTargetTemperatureChange(value)
 {
-    var newTemperature = $("input#txtTargetTemp").val();
-    msgPool.push({'action': 'targetTemp', 'value': newTemperature});
+    //var newTemperature = $("input#txtTargetTemp").val();
+    //$("body").append(value);
+    //alert(value);
+    msgPool.push({'action': 'targetTemp', 'value': value});
+    //var a = halfCircularSlider.value;
 }
 
 function isEmpty(obj)
