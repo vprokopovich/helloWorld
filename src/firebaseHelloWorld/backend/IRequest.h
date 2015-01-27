@@ -14,6 +14,7 @@ enum class RequestType
 
 class IRequest
 {
+public:
 	/**
 	 * Processes request
 	 */
@@ -23,6 +24,8 @@ class IRequest
 	 * Provides request Id
 	 */
 	virtual const std::string& GetId() = 0;
+
+	virtual const RequestType GetType() = 0;
 };
 
 typedef std::shared_ptr<IRequest> IRequestPtrS;

@@ -8,10 +8,12 @@ set(HEADERS
 	Request.h
 	RequestFactory.h
 	Exceptions.h
+	FirebaseClient.h
 )
 set(SOURCES
 	Request.cpp
 	RequestFactory.cpp
+	FirebaseClient.cpp
 	main.cpp
 )
 set(LIBRARIES

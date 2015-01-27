@@ -15,6 +15,7 @@ public:
 
 	virtual void Process() override;
 	virtual const std::string& GetId() override;
+	virtual const RequestType GetType() override;
 
 private:
 	/**
@@ -39,6 +40,7 @@ public:
 
 	virtual void Process() override;
 	virtual const std::string& GetId() override;
+	virtual const RequestType GetType() override;
 
 private:
 	/**
