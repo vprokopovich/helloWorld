@@ -3,6 +3,9 @@
 #include <string.h>
 #include <curl/curl.h>
 #include <json/json.h>
+#include "Request.h"
+#include "RequestFactory.h"
+#include <CTrace.h>
 
 struct MemoryStruct {
   char *memory;
@@ -80,7 +83,15 @@ int main(void)
     	printf("%lu bytes retrieved\n", (long)chunk.size);
 
     	std::string jsonDocument(chunk.memory, chunk.size);
-    	parseJSON(jsonDocument);
+
+    	try
+    	{
+    		auto requests = RequestFactory::CreateRequests(jsonDocument);
+    	}
+    	catch(std::exception& ex)
+    	{
+    		TRC_ERROR("%s", ex.what());
+    	}
   	}
  
     /* always cleanup */ 
@@ -91,26 +102,4 @@ int main(void)
   }
   curl_global_cleanup();
   return 0;
-}
-
-
-void parseJSON(const std::string& document)
-{
-	Json::Value root;   // will contains the root value after parsing.
-	Json::Reader reader;
-	bool parsingSuccessful = reader.parse( document, root );
-	if ( !parsingSuccessful )
-	{
-	    // report to the user the failure and their locations in the document.
-	    std::cout  << "Failed to parse configuration" << std::endl;
-	    return;
-	}
-	const Json::Value requests = root;
-	for (Json::ValueIterator itr = root.begin() ; itr != root.end() ; itr++ )
-	{
-			Json::Value key = itr.key();
-			Json::Value value = (*itr);
-
-			std::cout<<key.asString() << "   - " << value["action"].asString() << "  " << value["value"].asInt() << std::endl;
-    }
 }

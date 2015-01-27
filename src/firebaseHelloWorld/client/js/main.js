@@ -110,7 +110,7 @@ function onTargetTemperatureChange(value)
     //var newTemperature = $("input#txtTargetTemp").val();
     //$("body").append(value);
     //alert(value);
-    msgPool.push({'action': 'targetTemp', 'value': value});
+    msgPool.push({'action': 'RequestSetTemp', 'value': value});
     //var a = halfCircularSlider.value;
 }
 

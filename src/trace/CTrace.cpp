@@ -53,7 +53,6 @@ void CTrace::traceDebug(const char * format,...)
       va_start(ap,format);
       vprintf(format,ap);
       va_end(ap);
-      printf("\n");
       mMutex.unlock();
    }
 }
@@ -68,7 +67,6 @@ void CTrace::traceWarning(const char * format,...)
       va_start(ap,format);
       vprintf(format,ap);
       va_end(ap);
-      printf("\n");
       mMutex.unlock();
    }
 }

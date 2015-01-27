@@ -3,15 +3,21 @@ project(FirebaseHelloWorld)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
-#set(HEADERS
-#	ExampleBase.h
-#)
+set(HEADERS
+	IRequest.h
+	Request.h
+	RequestFactory.h
+	Exceptions.h
+)
 set(SOURCES
+	Request.cpp
+	RequestFactory.cpp
 	main.cpp
 )
 set(LIBRARIES
 	curl
 	jsoncpp
+	Trace
 )
 
 add_executable(firebaseHelloWorld ${HEADERS} ${SOURCES})
