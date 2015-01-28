@@ -18,12 +18,8 @@ int main(void)
 
         for (auto requestIter : requests)
         {
-            TRC_DEBUG("requestId = %s requestType = %d", 
-                      requestIter->GetId().c_str(),
-                      requestIter->GetType());
+            requestIter->Process();
         }
-
-        client.SetState("statMsg", 33, "timeStamp", 11);
     }
     catch(std::exception& ex)
     {
