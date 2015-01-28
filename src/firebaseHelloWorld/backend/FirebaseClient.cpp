@@ -3,6 +3,7 @@
 #include <cstring>
 #include "Exceptions.h"
 #include <curl/curl.h>
+#include <json/json.h>
 
 FirebaseClient::FirebaseClient(const std::string& baseUrl)
 : mBaseUrl(baseUrl)
@@ -48,6 +49,40 @@ std::string FirebaseClient::GetRequestsJsonString()
     return retVal;
 }
 
+void FirebaseClient::SetState(const std::string& status,
+                              const std::int32_t targetTemp,
+                              const std::string& targetTime,
+                              const std::int32_t temp)
+{
+    CURL* curl = curl_easy_init();
+    CURLcode res;
+
+    if (curl)
+    {
+        struct curl_slist* headers = NULL;
+
+        std::string content = EncodeJson(status, targetTemp, targetTime, temp);
+        std::string headerContentLength = "Content-Length: " + content.length();
+        headers = curl_slist_append(headers, headerContentLength.c_str());
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers); 
+        curl_easy_setopt(curl, CURLOPT_URL, GetStateUrl());  
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, content.c_str());
+
+        res = curl_easy_perform(curl);
+
+        if (res != CURLE_OK)
+        {
+            throw CurlException(curl_easy_strerror(res));
+        }
+
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+    }
+}
+
 size_t FirebaseClient::WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
@@ -70,4 +105,27 @@ const char* FirebaseClient::GetMsgPoolUrl() const
 {
     std::string url = mBaseUrl + "msg-pool.json";
     return url.c_str();
+}
+
+const char* FirebaseClient::GetStateUrl() const
+{
+    std::string url = mBaseUrl + "state.json";
+    return url.c_str();
+}
+
+const std::string FirebaseClient::EncodeJson(const std::string& status,
+                                             const std::int32_t targetTemp,
+                                             const std::string& targetTime,
+                                             const std::int32_t temp) const
+{
+    Json::Value root;
+    root["status"] = status;
+    root["targetTemp"] = targetTemp;
+    root["targetTime"] = targetTime;
+    root["temp"] = temp;
+
+    Json::FastWriter writer;
+    std::string retVal = writer.write(root);
+
+    return retVal.c_str();
 }

@@ -6,36 +6,45 @@
 class FirebaseClient
 {
 public:
-	FirebaseClient(const std::string& baseUrl);
-	~FirebaseClient();
+    FirebaseClient(const std::string& baseUrl);
+    ~FirebaseClient();
 
-	std::string GetRequestsJsonString();
+    std::string GetRequestsJsonString();
+    void SetState(const std::string& status,
+                  const std::int32_t targetTemp,
+                  const std::string& targetTime,
+                  const std::int32_t temp);
 private:
-	// Unimplemented to avoid misusing
-	FirebaseClient();
+    // Unimplemented to avoid misusing
+    FirebaseClient();
 
-	struct MemoryStruct
-	{
-		char*  pMemory;
-		size_t size;
+    struct MemoryStruct
+    {
+        char*  pMemory;
+        size_t size;
 
-		MemoryStruct()
-		: pMemory(static_cast<char*>(malloc(1)))
-		, size(0)
-		{
-		}
+        MemoryStruct()
+        : pMemory(static_cast<char*>(malloc(1)))
+        , size(0)
+        {
+        }
 
-		~MemoryStruct()
-		{
-			if(pMemory) free(pMemory);
-		}
-	};
+        ~MemoryStruct()
+        {
+            if(pMemory) free(pMemory);
+        }
+    };
 
-	static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
-	const char* GetMsgPoolUrl() const;
+    static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
+    const char* GetMsgPoolUrl() const;
+    const char* GetStateUrl() const;
+    const std::string EncodeJson(const std::string& status,
+                                 const std::int32_t targetTemp,
+                                 const std::string& targetTime,
+                                 const std::int32_t temp) const;
 
 private:
-	std::string mBaseUrl;
+    std::string mBaseUrl;
 };
 
 #endif // FIREBASECLIENT_H

@@ -22,6 +22,8 @@ int main(void)
                       requestIter->GetId().c_str(),
                       requestIter->GetType());
         }
+
+        client.SetState("statMsg", 33, "timeStamp", 11);
     }
     catch(std::exception& ex)
     {
