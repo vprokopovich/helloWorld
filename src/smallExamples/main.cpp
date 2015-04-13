@@ -1,121 +1,157 @@
 #include <iostream>
 #include <cstddef>
 #include <time.h>
+#include <functional>
+#include <vector>
+
+class Experiment
+{
+public:
+    Experiment()
+        : m_repetitions(50)
+    {}
+
+    typedef std::function<void()> fn_type;
+
+    std::uint64_t run(fn_type& runFunction)
+    {
+        std::uint64_t retVal = 0;
+        std::uint64_t measure = 0;
+
+        for (int j = 0; j < m_repetitions; j++)
+        {        
+            measure = clock();
+
+            for (int i = 0; i < m_repetitions; i++)
+            {
+                runFunction();
+            }
+
+            retVal += clock() - measure;
+        }
+
+        return retVal / m_repetitions;
+    }
+private:
+    int m_repetitions;
+};
+
+// TODO: SIMD
 
 int main()
 {
-    int* ptr1 = nullptr;
-    int* ptr2 = nullptr;
+    std::vector<std::pair<size_t, size_t>> dimensions = {{64, 4688}, {4688, 64}, {1000, 300}, {300, 1000}};
 
-    ptrdiff_t difference = ptr2 - ptr1;
-
-    register int a = 10;
-    if (ptr1)
+    std::cout << "========== Matrix as vector of vectors ==========" << std::endl;
+    for (auto& dimension : dimensions)
     {
-        a = 100;
-    }
+        auto m = dimension.first;
+        auto n = dimension.second;
 
-    int b = 20;
-    if (ptr1 != nullptr)
-    {
-        b = 200;
-    }
-
-    const int repetitions = 1000;
-    
-    /*
-    const size_t m = 1000;
-    const size_t n = 300;
-    */
-    const size_t m = 64;          // To fit in L1
-    const size_t n = 4688;        // To fit in L1
-
-    std::cout << "Created matrix as array of arrays" << std::endl;
-    {
         int** pArr = new int*[m];  // Creates array of M pointers to arrays
-        for (auto i = 0; i < m; i++)
+        for (size_t i = 0; i < m; i++)
         {
             pArr[i] = new int[n];
-
-            // Printing the difference between addresses
-            /*
-            {
-                if (i == 0)
-                {
-                    std::cout << "Differences between address of the 0 element of current array and previous." << std::endl
-                              << "When they are allocated strictly one after another, it should be " << n << std::endl;
-                }
-                if (i > 0)
-                {
-                    std::cout << (pArr[i] - pArr[i - 1]) << "  ";
-                }
-                if (i == m - 1)
-                {
-                    std::cout << std::endl;
-                }
-            }
-            */
         }
         
 
-        std::cout << "Accessing matrix by row" << std::endl;
-        for (auto iteration = 0; iteration < 10; iteration++)
-        {
-            long t1 = clock();
-
-            int* previousAddress = nullptr;
-
-            for (auto k = 0; k < repetitions; k++)
+        std::function<void()> accessByRow = [&]()
+        { 
+            int summ = 0;
+            for (size_t i = 0; i < m; i++)
             {
-                int summ = 0;
-                for (auto i = 0; i < m; i++)
+                for (size_t j = 0; j < n; j++)
                 {
-                    for (auto j = 0; j < n; j++)
-                    {
-                        summ += pArr[i][j];
-                        
-                        /*
-                        // Difference between the address of current element and previous one. 
-                        // If it is not 1 - elements are not located sequencely in memory
-                        std::cout << (pArr[i] +j) - previousAddress << " ";
-                        previousAddress = pArr[i] + j;
-                        */
-                    }
-                }
-
-            }
-            long t2 = clock();
-            std::cout << "Time: " << t2 - t1 << std::endl;
-        }
-
-        std::cout << "Accessing matrix by column" << std::endl;
-        // M pointers to arrays, each array contains N values
-        for (auto iteration = 0; iteration < 10; iteration++)
-        {
-            long t1 = clock();
-            for (auto k = 0; k < repetitions; k++)
-            {
-                int summ = 0;
-                for (auto i = 0; i < n; i++)
-                {
-                    for (auto j = 0; j < m; j++)
-                    {
-                        summ += pArr[j][i];
-                    }
+                    summ += pArr[i][j];
                 }
             }
-            long t2 = clock();
-            std::cout << "Time: " << t2 - t1 << std::endl;
-        }
+        };
 
-        for (auto i = 0; i < m; i++)
+        std::function<void()> accessByColumn = [&]()
+        { 
+            int summ = 0;
+            for (size_t i = 0; i < n; i++)
+            {
+                for (size_t j = 0; j < m; j++)
+                {
+                    summ += pArr[j][i];
+                }
+            }
+        };
+
+        Experiment e;
+        std::cout << "Matrix " << m << "x" << n << "(" << n << "elements in the row)" << std::endl;
+
+        auto timeByRow = e.run(accessByRow) ;
+        std::cout << "Average Access By Row:    "
+                  << timeByRow
+                  << " Processing time for element: " << static_cast<double>(timeByRow * 1000 / (m*n)) << "ns"
+                  << std::endl;
+
+        auto timeByColumn = e.run(accessByColumn);
+        std::cout << "Average Access By Column: " << timeByColumn 
+                  << " Processing time for element: " << static_cast<double>(timeByColumn * 1000 / (m*n)) << "ns"
+                  << std::endl;
+
+        for (size_t i = 0; i < m; i++)
         {
             delete[] pArr[i];
         }
         delete[] pArr;
     }
 
+
+    std::cout << "========== Matrix as vector ==========" << std::endl;
+    for (auto& dimension : dimensions)
+    {
+        auto m = dimension.first;
+        auto n = dimension.second;
+        int* pArr = new int[m*n];
+
+        std::function<void()> accessByRow = [&]()
+        { 
+            int summ = 0;
+            for (size_t i = 0; i < m; i++)
+            {
+                for (size_t j = 0; j < n; j++)
+                {
+                    //summ += pArr[i*n + j];
+                    summ +=  *(pArr + i*n + j);
+                }
+            }
+        };
+
+        std::function<void()> accessByColumn = [&]()
+        { 
+            int summ = 0;
+            for (size_t i = 0; i < n; i++)
+            {
+                for (size_t j = 0; j < m; j++)
+                {
+                    //summ += pArr[j*n + i];
+                    summ += *(pArr + j*n + i);
+                }
+            }
+        };
+
+        Experiment e;
+        std::cout << "Matrix " << m << "x" << n << std::endl;
+
+        auto timeByRow = e.run(accessByRow) ;
+        std::cout << "Average Access By Row:    "
+                  << timeByRow
+                  << " Processing time for element: " << static_cast<double>(timeByRow * 1000 / (m*n)) << "ns"
+                  << std::endl;
+
+        auto timeByColumn = e.run(accessByColumn);
+        std::cout << "Average Access By Column: " << timeByColumn 
+                  << " Processing time for element: " << static_cast<double>(timeByColumn * 1000 / (m*n)) << "ns"
+                  << std::endl;
+
+        delete[] pArr;
+    }
     //////////////////////////////////////
+    /*
     std::cout << "Created matrix as 1 array" << std::endl;
     {
         int* pArr = new int[m*n];
@@ -128,22 +164,13 @@ int main()
             for (auto k = 0; k < repetitions; k++)
             {
                 int summ = 0;
-                int* previousAddress = nullptr;
-                for (auto i = 0; i < m; i++)
+                //int* previousAddress = nullptr;
+                for (size_t i = 0; i < m; i++)
                 {
-                    for (auto j = 0; j < n; j++)
+                    for (size_t j = 0; j < n; j++)
                     {
-                        summ += pArr[i*n + j];
-
-                        size_t addr = i*n + j;
-
-                        // Difference between the address of current element and previous one. 
-                        // If it is not 1 - elements are not located sequencely in memory
-                        /*
-                        std::cout << (pArr + i*n + j) - previousAddress << " ";
-                        previousAddress = pArr + i*n + j;
-                        */
-                        
+                        //summ += pArr[i*n + j];
+                        summ +=  *(pArr + i*n + j);
                     }
                 }
 
@@ -161,19 +188,13 @@ int main()
             for (auto k = 0; k < repetitions; k++)
             {
                 int summ = 0;
-                int* previousAddress = nullptr;
-                for (auto i = 0; i < n; i++)
+                //int* previousAddress = nullptr;
+                for (size_t i = 0; i < n; i++)
                 {
-                    for (auto j = 0; j < m; j++)
+                    for (size_t j = 0; j < m; j++)
                     {
-                        summ += pArr[j*n + i];
-
-                        // Difference between the address of current element and previous one. 
-                        // If it is not N - elements are not located sequencely in memory
-                        /*
-                        std::cout << (pArr + j*n + i) - previousAddress << " ";
-                        previousAddress = pArr + j*n + i;
-                        */
+                        //summ += pArr[j*n + i];
+                        summ += *(pArr + j*n + i);
                     }
                 }
 
@@ -184,6 +205,7 @@ int main()
 
         delete[] pArr;
     }
+    */
 
     return 0;
 }
