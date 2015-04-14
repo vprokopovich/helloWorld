@@ -7,8 +7,10 @@
 class Experiment
 {
 public:
-    Experiment()
-        : m_repetitions(50)
+    
+    Experiment(int measurements = 10, int repetitions = 100)
+        : m_countMeasurements(measurements)
+        , m_countRepetitions(repetitions)
     {}
 
     typedef std::function<void()> fn_type;
@@ -18,25 +20,26 @@ public:
         std::uint64_t retVal = 0;
         std::uint64_t measure = 0;
 
-        for (int j = 0; j < m_repetitions; j++)
+        for (int j = 0; j < m_countMeasurements; j++)
         {        
             measure = clock();
 
-            for (int i = 0; i < m_repetitions; i++)
+            for (int i = 0; i < m_countRepetitions; i++)
             {
                 runFunction();
             }
 
-            retVal += clock() - measure;
+            retVal += (clock() - measure) / m_countMeasurements;
         }
 
-        return retVal / m_repetitions;
+        return retVal;
     }
 private:
-    int m_repetitions;
+    int m_countMeasurements;
+    int m_countRepetitions;
 };
 
-// TODO: SIMD
+// TODO: read about SIMD
 
 int main()
 {
@@ -150,226 +153,37 @@ int main()
 
         delete[] pArr;
     }
-    //////////////////////////////////////
-    /*
-    std::cout << "Created matrix as 1 array" << std::endl;
+
+
     {
-        int* pArr = new int[m*n];
+        // Access to data in vector
+        const size_t dim = 64 * 1024;
+        int* pVector = new int[dim];
 
-        std::cout << "Accessing matrix by row" << std::endl;
-        for (auto iteration = 0; iteration < 10; iteration++)
+        std::function<void()> processAllData = [&]()
         {
-            long t1 = clock();
+            for (size_t i = 0; i < dim; i++) pVector[i] *= 3;
+        };
 
-            for (auto k = 0; k < repetitions; k++)
-            {
-                int summ = 0;
-                //int* previousAddress = nullptr;
-                for (size_t i = 0; i < m; i++)
-                {
-                    for (size_t j = 0; j < n; j++)
-                    {
-                        //summ += pArr[i*n + j];
-                        summ +=  *(pArr + i*n + j);
-                    }
-                }
-
-            }
-            long t2 = clock();
-            std::cout << "Time: " << t2 - t1 << std::endl;
-
-        }
-
-        std::cout << "Accessing matrix by column" << std::endl;
-        for (auto iteration = 0; iteration < 10; iteration++)
+        std::function<void()> processPartOfData = [&]()
         {
-            long t1 = clock();
+            for (size_t i = 0; i < dim; i += 16) pVector[i] *= 3;
+        };
 
-            for (auto k = 0; k < repetitions; k++)
-            {
-                int summ = 0;
-                //int* previousAddress = nullptr;
-                for (size_t i = 0; i < n; i++)
-                {
-                    for (size_t j = 0; j < m; j++)
-                    {
-                        //summ += pArr[j*n + i];
-                        summ += *(pArr + j*n + i);
-                    }
-                }
+        Experiment e;
+        std::cout << "========== Access to data in vector ==========" << std::endl;
 
-            }
-            long t2 = clock();
-            std::cout << "Time: " << t2 - t1 << std::endl;
-        }
+        auto timeAllData = e.run(processAllData) ;
+        std::cout << "Average processing all data:    "
+                  << timeAllData
+                  << std::endl;
 
-        delete[] pArr;
+        auto timePartOfData = e.run(processPartOfData);
+        std::cout << "Average processing part of data (1/16): " << timePartOfData 
+                  << std::endl;
+
+        delete[] pVector;
     }
-    */
 
     return 0;
 }
-
-
-/*
-const size_t m = 1000;
-const size_t n = 300;
-
-
-
-Created matrix as array of arrays
-Accessing matrix by row
-Time: 646
-Time: 641
-Time: 636
-Time: 638
-Time: 637
-Time: 637
-Time: 638
-Time: 643
-Time: 636
-Time: 636
-Accessing matrix by column
-Time: 773
-Time: 769
-Time: 774
-Time: 769
-Time: 768
-Time: 774
-Time: 772
-Time: 772
-Time: 771
-Time: 768
-Created matrix as 1 array
-Accessing matrix by row
-Time: 748
-Time: 748
-Time: 745
-Time: 754
-Time: 746
-Time: 748
-Time: 749
-Time: 751
-Time: 747
-Time: 745
-Accessing matrix by column
-Time: 717
-Time: 725
-Time: 717
-Time: 717
-Time: 724
-Time: 722
-Time: 724
-Time: 727
-Time: 722
-Time: 720
-Press any key to continue . . .
-*/
-
-/*
-const size_t m = 4688;      // To fit in L1
-const size_t n = 64;        // To fit in L1
-
-
-Created matrix as array of arrays
-Accessing matrix by row
-Time: 675
-Time: 668
-Time: 669
-Time: 668
-Time: 671
-Time: 671
-Time: 671
-Time: 673
-Time: 670
-Time: 671
-Accessing matrix by column
-Time: 827
-Time: 827
-Time: 826
-Time: 826
-Time: 830
-Time: 824
-Time: 825
-Time: 831
-Time: 826
-Time: 823
-Created matrix as 1 array
-Accessing matrix by row
-Time: 780
-Time: 780
-Time: 777
-Time: 776
-Time: 778
-Time: 777
-Time: 778
-Time: 777
-Time: 781
-Time: 778
-Accessing matrix by column
-Time: 762
-Time: 765
-Time: 763
-Time: 767
-Time: 764
-Time: 765
-Time: 765
-Time: 765
-Time: 764
-Time: 765
-Press any key to continue . . .
-*/
-
-
-/*
-const size_t m = 64;          // To fit in L1
-const size_t n = 4688;        // To fit in L1
-
-Created matrix as array of arrays
-Accessing matrix by row
-Time: 654
-Time: 651
-Time: 649
-Time: 653
-Time: 648
-Time: 648
-Time: 651
-Time: 650
-Time: 650
-Time: 650
-Accessing matrix by column
-Time: 732
-Time: 737
-Time: 740
-Time: 731
-Time: 738
-Time: 730
-Time: 731
-Time: 735
-Time: 732
-Time: 735
-Created matrix as 1 array
-Accessing matrix by row
-Time: 741
-Time: 739
-Time: 739
-Time: 742
-Time: 739
-Time: 739
-Time: 740
-Time: 738
-Time: 740
-Time: 740
-Accessing matrix by column
-Time: 719
-Time: 729
-Time: 720
-Time: 716
-Time: 721
-Time: 719
-Time: 721
-Time: 718
-Time: 715
-Time: 720
-Press any key to continue . . .
-*/
