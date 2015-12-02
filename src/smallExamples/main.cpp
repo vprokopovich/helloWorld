@@ -3,6 +3,7 @@
 #include <time.h>
 #include <functional>
 #include <vector>
+#include <cstdint>
 
 class Experiment
 {
@@ -44,7 +45,7 @@ private:
 int main()
 {
     std::vector<std::pair<size_t, size_t>> dimensions = {{64, 4688}, {4688, 64}, {1000, 300}, {300, 1000}};
-
+    /*
     std::cout << "========== Matrix as vector of vectors ==========" << std::endl;
     for (auto& dimension : dimensions)
     {
@@ -153,11 +154,11 @@ int main()
 
         delete[] pArr;
     }
-
+    */
 
     {
         // Access to data in vector
-        const size_t dim = 64 * 1024;
+        const size_t dim = 64 * 1024 * 1024;
         int* pVector = new int[dim];
 
         std::function<void()> processAllData = [&]()
