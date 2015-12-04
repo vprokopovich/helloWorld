@@ -1,40 +1,85 @@
 #include <iostream>     // for std::cout
 #include <cinttypes>    // for type definitions
 #include <vector>
-#include <algorithm>    // for std::make_heap
 
 #include "helpers.h"
 #include "heap.h"
 
-int main(int argc, char** argv)
+void TestHeap()
 {
     using Type = std::int32_t;
+    using namespace Alg;    // For MyHeap, StdHeap
 
     const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11 };
-    std::cout << "Source array:   " << Print<Type>(sourceData) << std::endl;
+    //std::cout << "Source array:   " << Util::ToString(sourceData) << std::endl;
 
-    // Creating own heap
-    Heap<Type> myHeap(sourceData);
+    // Creating heaps
+    MyHeap<Type> myHeap(sourceData);
+    //MyHeap<Type> myHeap{ 1, 3, 5, 7, 10, 0, 45, 9, 11 }; // another possibility
+    StdHeap<Type> stdHeap(sourceData);
 
-    // Creating std::heap
-    auto stdHeap = sourceData;
-    std::make_heap(stdHeap.begin(), stdHeap.end());
+    //std::cout << "Heap internals: " << Util::ToString(myHeap.GetRaw()) << std::endl;
 
-    std::cout << "Heap internals: " << Print<Type>(myHeap.GetRaw()) << std::endl;
+    // Checking push to heap
+    {
+        myHeap.Push(100);
+        stdHeap.Push(100);
+        myHeap.Push(99);
+        stdHeap.Push(99);
 
-    // Pushing to own heap
-    myHeap.Push(100);
-    myHeap.Push(99);
+        //std::cout << "Heap internals after pushing values: " << Util::ToString(myHeap.GetRaw()) << std::endl;
+        Util::CheckEqual(myHeap.GetRaw(), stdHeap.GetRaw(), __FILE__, __LINE__);
+    }
 
-    // Pushing to std::heap
-    stdHeap.push_back(100);
-    std::push_heap(stdHeap.begin(), stdHeap.end());
-    stdHeap.push_back(99);
-    std::push_heap(stdHeap.begin(), stdHeap.end());
+    // Checking pop from heap
+    {
+        myHeap.Pop(); // getting 100
+        stdHeap.Pop();
 
-    std::cout << "Heap internals after pushing values: " << Print(myHeap.GetRaw()) << std::endl;
+        myHeap.Pop(); // getting  99
+        stdHeap.Pop();
 
-    std::cout << (Compare(myHeap.GetRaw(), stdHeap) ? "OK" : "Fail") << std::endl;
+        const auto heapSize = myHeap.GetSize();
+        for (auto i = 0; i < heapSize; i++)
+        {
+            auto val1 = myHeap.Pop();
+            auto val2 = stdHeap.Pop();
+            Util::CheckEqual(val1, val2, __FILE__, __LINE__);
+        }
+
+        Util::CheckTrue(myHeap.GetSize() == 0, __FILE__, __LINE__);
+        Util::CheckTrue(stdHeap.GetSize() == 0, __FILE__, __LINE__);
+    }
+
+    // Checking that exceptions are thrown when heap is empty
+    {
+        bool gotEx1 = false;
+        try
+        {
+            myHeap.Pop();
+        }
+        catch (std::out_of_range& ex)
+        {
+            gotEx1 = true;
+        }
+
+        bool gotEx2 = false;
+        try
+        {
+            stdHeap.Pop();
+        }
+        catch (std::out_of_range& ex)
+        {
+            gotEx2 = true;
+        }
+        Util::CheckTrue(gotEx1, __FILE__, __LINE__);
+        Util::CheckTrue(gotEx2, __FILE__, __LINE__);
+    }
+}
+
+int main(int argc, char** argv)
+{
+    TestHeap();
 
     return 0;
 }
