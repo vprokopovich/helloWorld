@@ -13,14 +13,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 #endif()
 
 set(HEADERS
-	heap.h
+        heap.h
         helpers.h
+        sort.h
 )
 set(SOURCES
-#	ExampleOptional.h
-#	ExampleProgramOptions.h
-#	ExampleAny.h
-	main.cpp
+        main.cpp
 )
 #set(LIBRARIES
 #	${Boost_LIBRARIES}

@@ -4,6 +4,7 @@
 
 #include "helpers.h"
 #include "heap.h"
+#include "sort.h"
 
 void TestHeap()
 {
@@ -77,9 +78,26 @@ void TestHeap()
     }
 }
 
+void TestBubbleSort()
+{
+    using Type = std::int32_t;
+    using namespace Alg;    // For BubbleSort
+
+    const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
+    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
+
+    BubbleSort<std::vector<Type>> sorter;
+    auto data1(sourceData);
+    sorter.Sort(data1);
+
+
+    std::cout << "Sorted: " << Util::ToString(data1) << std::endl;
+}
+
 int main(int argc, char** argv)
 {
     TestHeap();
+    TestBubbleSort();
 
     return 0;
 }
