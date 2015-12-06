@@ -73,6 +73,7 @@ namespace Util
     * @param pFile  (optional) string that represents position of the call in the file
     * @param line   (optional) number represents line of the call in file
     */
+    static
     void CheckTrue(bool val, const char* pFile = nullptr, int line = 0)
     {
         if (!val)
@@ -83,5 +84,11 @@ namespace Util
             }
             std::cout << "Fail" << std::endl;
         }
+    }
+
+    static
+    void CheckFalse(bool val, const char* pFile = nullptr, int line = 0)
+    {
+        CheckTrue(!val, pFile, line);
     }
 }

@@ -206,4 +206,29 @@ namespace Alg
     private:
         std::vector<T> _data;
     };
+
+    template<typename T>
+    std::string DumpHeapToDot(const IHeap<T>& heap, const std::string& title)
+    {
+        auto internals = heap.GetRaw();
+        std::stringstream ss;
+        ss << "graph " << title << " {" << std::endl;
+        for (std::size_t i=0; i<internals.size(); i++)
+        {
+            ss << "Node_" << i << "[label=\""<<internals[i] << "\"];" << std::endl; // displaying value in a node
+
+            if ((2*i + 1) < internals.size()) // if left child exists
+            {
+                ss << "Node_" << i << "--" << "Node_" << (2*i+1) << ";" << std::endl;
+            }
+
+            if ((2*i + 2) < internals.size()) // if left child exists
+            {
+                ss << "Node_" << i << "--" << "Node_" << (2*i+2) << ";" << std::endl;
+            }
+        }
+        ss << "}" << std::endl;
+
+        return ss.str();
+    }
 }

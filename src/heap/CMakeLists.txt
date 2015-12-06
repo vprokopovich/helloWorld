@@ -16,9 +16,11 @@ set(HEADERS
         heap.h
         helpers.h
         sort.h
+        brackets.h
 )
 set(SOURCES
         main.cpp
+        brackets.cpp
 )
 #set(LIBRARIES
 #	${Boost_LIBRARIES}

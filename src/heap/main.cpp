@@ -5,6 +5,7 @@
 #include "helpers.h"
 #include "heap.h"
 #include "sort.h"
+#include "brackets.h"
 
 void TestHeap()
 {
@@ -12,14 +13,11 @@ void TestHeap()
     using namespace Alg;    // For MyHeap, StdHeap
 
     const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11 };
-    //std::cout << "Source array:   " << Util::ToString(sourceData) << std::endl;
 
     // Creating heaps
     MyHeap<Type> myHeap(sourceData);
     //MyHeap<Type> myHeap{ 1, 3, 5, 7, 10, 0, 45, 9, 11 }; // another possibility
     StdHeap<Type> stdHeap(sourceData);
-
-    //std::cout << "Heap internals: " << Util::ToString(myHeap.GetRaw()) << std::endl;
 
     // Checking push to heap
     {
@@ -28,8 +26,20 @@ void TestHeap()
         myHeap.Push(99);
         stdHeap.Push(99);
 
-        //std::cout << "Heap internals after pushing values: " << Util::ToString(myHeap.GetRaw()) << std::endl;
-        Util::CheckEqual(myHeap.GetRaw(), stdHeap.GetRaw(), __FILE__, __LINE__);
+        // dumping graph to file
+        /*
+        auto handle = fopen("graph.dot", "a");
+        auto myDot = DumpHeapToDot(myHeap, "MyHeap");
+        auto stdDot = DumpHeapToDot(stdHeap, "StdHeap");
+        fprintf(handle, "%s", myDot.c_str());
+        fprintf(handle, "%s", stdDot.c_str());
+        fclose(handle);
+        std::cout << "Heap MY  internals after pushing values: " << Util::ToString(myHeap.GetRaw()) << std::endl;
+        std::cout << "Heap STD internals after pushing values: " << Util::ToString(stdHeap.GetRaw()) << std::endl;
+        */
+
+        // TODO: implement another check. Under different compilers results may vary
+        // Util::CheckEqual(myHeap.GetRaw(), stdHeap.GetRaw(), __FILE__, __LINE__);
     }
 
     // Checking pop from heap
@@ -94,10 +104,22 @@ void TestBubbleSort()
     std::cout << "Sorted: " << Util::ToString(data1) << std::endl;
 }
 
+void TestBrackets()
+{
+    Brackets br;
+    Util::CheckTrue(br.CheckBrackets("((){})"), __FILE__, __LINE__);
+    Util::CheckTrue(br.CheckBrackets("((){}((({[]}[]))[]{}()))"), __FILE__, __LINE__);
+    Util::CheckTrue(br.CheckBrackets("(({}))"), __FILE__, __LINE__);
+    Util::CheckFalse(br.CheckBrackets("(({})"), __FILE__, __LINE__);
+    Util::CheckFalse(br.CheckBrackets("((){})]"), __FILE__, __LINE__);
+    Util::CheckFalse(br.CheckBrackets("()]"), __FILE__, __LINE__);
+}
+
 int main(int argc, char** argv)
 {
     TestHeap();
     TestBubbleSort();
+    TestBrackets();
 
     return 0;
 }
