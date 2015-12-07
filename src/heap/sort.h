@@ -51,7 +51,39 @@ namespace Alg
         virtual void Sort(TContainer& data) override
         {
             const auto countElements = data.size();
-            // TODO: implement
+            std::size_t sortedLength = 1; // Assuming first eleent is already sorted
+
+            // starting from first unsorted, til the last element
+            for (std::size_t i = sortedLength; i < countElements; i++)
+            {
+                std::size_t whereToInsertIndex = sortedLength;
+                for (std::size_t j = 0; j<sortedLength; j++)
+                {
+                    if (data[i] < data[j])
+                    {
+                        whereToInsertIndex = j;
+                        break;
+                    }
+                }
+
+                std::cout << "Decided to place it to index:" << whereToInsertIndex << std::endl;
+
+                Insert(i, whereToInsertIndex, data);
+                sortedLength++;
+
+                std::cout << "Got: " << Util::ToString(data) << std::endl;
+            }
+        }
+
+    private:
+        void Insert(std::size_t posFrom, std::size_t posTo, TContainer& data)
+        {
+            auto value = data[posFrom];
+            for (std::size_t i = posFrom; i>posTo; i--)
+            {
+                data[i] = data[i-1];
+            }
+            data[posTo] = value;
         }
     };
 }
