@@ -85,10 +85,10 @@ namespace Util
         std::mt19937 mt(rd());
 
         // Deducing type at compile time
-        std::conditional<std::is_floating_point<T>::value,      // if T is a floating point type
-                         std::uniform_real_distribution<T>,     // then selecting type std::uniform_real_distribution<T>
-                         std::uniform_int_distribution<T>>      // else selecting type std::uniform_int_distribution<T>
-            ::type dist(min, max);                              // Defining variable of selected type
+        typename std::conditional<std::is_floating_point<T>::value,   // if T is a floating point type
+                                  std::uniform_real_distribution<T>,  // then selecting type std::uniform_real_distribution<T>
+                                  std::uniform_int_distribution<T>>   // else selecting type std::uniform_int_distribution<T>
+            ::type dist(min, max);                                    // Defining variable of selected type
 
         std::vector<T> retVal(count);
         for (std::size_t i = 0; i < count; i++)
@@ -127,7 +127,7 @@ namespace Util
     template<typename T>
     bool IsSorted(const T& container)
     {
-        T::value_type value = container.front();
+        typename T::value_type value = container.front();
         for (auto& v : container)
         {
             if (v < value)

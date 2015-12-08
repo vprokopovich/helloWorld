@@ -108,7 +108,7 @@ namespace Alg
         void Init()
         {
             std::size_t i = _data.size() / 2;
-            while (i >= 0)
+            while (true) // while i>=0
             {
                 Heapify(i);
 
