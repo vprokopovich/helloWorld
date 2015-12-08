@@ -25,10 +25,10 @@ namespace Alg
         {
             const auto countElements = data.size();
 
-            for (auto i = 0; i < countElements - 1; i++) // (countElements - 1) because we compare current with the next
+            for (std::size_t i = 0; i < countElements - 1; i++) // (countElements - 1) because we compare current with the next
             {
                 bool wasExchange = false;
-                for (auto j = 0; j < countElements - i - 1; j++)
+                for (std::size_t j = 0; j < countElements - i - 1; j++)
                 {
                     if (data[j] > data[j + 1])
                     {
@@ -53,7 +53,7 @@ namespace Alg
             const auto countElements = data.size();
             std::size_t sortedLength = 1; // Assuming first eleent is already sorted
 
-            // starting from first unsorted, til the last element
+            // starting from first unsorted, till the last element
             for (std::size_t i = sortedLength; i < countElements; i++)
             {
                 std::size_t whereToInsertIndex = sortedLength;
@@ -66,12 +66,8 @@ namespace Alg
                     }
                 }
 
-                std::cout << "Decided to place it to index:" << whereToInsertIndex << std::endl;
-
                 Insert(i, whereToInsertIndex, data);
                 sortedLength++;
-
-                std::cout << "Got: " << Util::ToString(data) << std::endl;
             }
         }
 

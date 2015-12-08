@@ -1,6 +1,7 @@
 #include <iostream>     // for std::cout
 #include <cinttypes>    // for type definitions
 #include <vector>
+#include <memory>
 
 #include "helpers.h"
 #include "heap.h"
@@ -12,11 +13,10 @@ void TestHeap()
     using Type = std::int32_t;
     using namespace Alg;    // For MyHeap, StdHeap
 
-    const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11 };
+    std::vector<Type> sourceData = Util::GetRandomVector<Type>(20);
 
     // Creating heaps
     MyHeap<Type> myHeap(sourceData);
-    //MyHeap<Type> myHeap{ 1, 3, 5, 7, 10, 0, 45, 9, 11 }; // another possibility
     StdHeap<Type> stdHeap(sourceData);
 
     // Checking push to heap
@@ -44,14 +44,8 @@ void TestHeap()
 
     // Checking pop from heap
     {
-        myHeap.Pop(); // getting 100
-        stdHeap.Pop();
-
-        myHeap.Pop(); // getting  99
-        stdHeap.Pop();
-
         const auto heapSize = myHeap.GetSize();
-        for (auto i = 0; i < heapSize; i++)
+        for (std::size_t i = 0; i < heapSize; i++)
         {
             auto val1 = myHeap.Pop();
             auto val2 = stdHeap.Pop();
@@ -69,7 +63,7 @@ void TestHeap()
         {
             myHeap.Pop();
         }
-        catch (std::out_of_range& ex)
+        catch (std::out_of_range& /*ex*/)
         {
             gotEx1 = true;
         }
@@ -79,7 +73,7 @@ void TestHeap()
         {
             stdHeap.Pop();
         }
-        catch (std::out_of_range& ex)
+        catch (std::out_of_range& /*ex*/)
         {
             gotEx2 = true;
         }
@@ -88,20 +82,21 @@ void TestHeap()
     }
 }
 
+/*
 void TestBubbleSort()
 {
     using Type = std::int32_t;
     using namespace Alg;    // For BubbleSort
 
-    const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
+    //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
+    auto sourceData = Util::GetRandomVector<Type>(20);
+//    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
 
     BubbleSort<std::vector<Type>> sorter;
     auto data1(sourceData);
     sorter.Sort(data1);
 
-
-    std::cout << "Sorted: " << Util::ToString(data1) << std::endl;
+    Util::CheckTrue(Util::IsSorted(data1), __FILE__, __LINE__);
 }
 
 void TestInsertionSort()
@@ -109,15 +104,52 @@ void TestInsertionSort()
     using Type = std::int32_t;
     using namespace Alg;
 
-    const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
+    //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
+    for (auto i = 0; i < 10; i++)
+    {
+        auto sourceData = Util::GetRandomVector<Type>(20);
 
-    InsertionSort<std::vector<Type>> sorter;
-    auto data1(sourceData);
-    sorter.Sort(data1);
+        InsertionSort<std::vector<Type>> sorter;
+        auto data1(sourceData);
+        sorter.Sort(data1);
 
-    std::cout << "Sorted: " << Util::ToString(data1) << std::endl;
+        if (!Util::IsSorted(data1))
+        {
+            // Printing an error message
+            Util::CheckTrue(Util::IsSorted(data1), __FILE__, __LINE__);
+            std::cout << "Failed on following sequence: " << Util::ToString(data1) << std::endl;
+        }
+    }
+
+}
+*/
+
+void TestSortingAlgorythms()
+{
+    using namespace Alg;
+    using Type = std::int32_t;
+    using TContainer = std::vector < Type > ;
+    using TSorter = std::unique_ptr < ISort<TContainer> > ;
     
+    std::vector<std::unique_ptr<ISort<TContainer>>> algs;
+    algs.push_back(TSorter(new BubbleSort<TContainer>()));
+    algs.push_back(TSorter(new InsertionSort<TContainer>()));
+
+    for (auto& sorter : algs)
+    {
+        for (auto i = 0; i < 10; i++)
+        {
+            auto sourceData = Util::GetRandomVector<Type>(20);
+            sorter->Sort(sourceData);
+
+            if (!Util::IsSorted(sourceData))
+            {
+                // Printing an error message
+                Util::CheckTrue(Util::IsSorted(sourceData), __FILE__, __LINE__);
+                std::cout << "Failed on following sequence: " << Util::ToString(sourceData) << std::endl;
+            }
+        }
+    }
 }
 
 void TestBrackets()
@@ -134,9 +166,10 @@ void TestBrackets()
 int main(int argc, char** argv)
 {
     TestHeap();
-    TestBubbleSort();
+    //TestBubbleSort();
     TestBrackets();
-    TestInsertionSort();
+    //TestInsertionSort();
+    TestSortingAlgorythms();
 
     return 0;
 }

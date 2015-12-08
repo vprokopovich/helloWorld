@@ -107,16 +107,23 @@ namespace Alg
     private:
         void Init()
         {
-            for (std::int64_t i = static_cast<std::int64_t>(_data.size() / 2); i >= 0; i--) // TODO: should be reworked to avoid signed values
+            std::size_t i = _data.size() / 2;
+            while (i >= 0)
             {
                 Heapify(i);
+
+                if (i == 0)
+                {
+                    break;
+                }
+                i--;
             }
         }
-        void Heapify(std::int64_t index)
+        void Heapify(std::size_t index)
         {
-            T leftChild = 0;
-            T rightChild = 0;
-            T largestChild = 0;
+            std::size_t leftChild = 0;
+            std::size_t rightChild = 0;
+            std::size_t largestChild = 0;
 
             for (;;)
             {
@@ -125,9 +132,9 @@ namespace Alg
                 * right child of the node with index i has index (2 * i + 2)
                 * The root of heap has index 0
                 **/
-                leftChild = 2 * index + 1;      // TODO: fix warning
-                rightChild = 2 * index + 2;     // TODO: fix warning
-                largestChild = index;           // TODO: fix warning
+                leftChild = 2 * index + 1;
+                rightChild = 2 * index + 2;
+                largestChild = index;
 
                 // Checking if a child exists  && if a child is bigger then parent
                 //    vvvvvvvvvvvvvvvvvvv              vvvvvvvvvvvvvvvvvvvvvvv

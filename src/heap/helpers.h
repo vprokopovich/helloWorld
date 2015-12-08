@@ -2,6 +2,7 @@
 
 #include <sstream>      // for std::stringstream
 #include <string>
+#include <random>
 
 namespace Util
 {
@@ -67,6 +68,37 @@ namespace Util
     }
 
     /*
+    * Generate vector of random values
+    * Please note, possible types are: signed/unsigned integers, floating points
+    * You`ll get compile time error in case if type T is not any of listed above (bool, char, classes, etc)
+    * due to implementation of std::uniform_real_distribution, std::uniform_int_distribution
+    *
+    * @param count  Number of values to be generated
+    * @param min    Minimal value
+    * @param max    Maximal value
+    * @return vector with random values in specified range of specified type
+    */
+    template<typename T>
+    std::vector<T> GetRandomVector(const std::size_t count, const T min = 0, const T max = 1000)
+    {
+        std::random_device rd;
+        std::mt19937 mt(rd());
+
+        // Deducing type at compile time
+        std::conditional<std::is_floating_point<T>::value,      // if T is a floating point type
+                         std::uniform_real_distribution<T>,     // then selecting type std::uniform_real_distribution<T>
+                         std::uniform_int_distribution<T>>      // else selecting type std::uniform_int_distribution<T>
+            ::type dist(min, max);                              // Defining variable of selected type
+
+        std::vector<T> retVal(count);
+        for (std::size_t i = 0; i < count; i++)
+        {
+            retVal[i] = dist(mt);
+        }
+        return retVal;
+    }
+
+    /*
     * Prints error message in case statement is false
     *
     * @param val    Operand1
@@ -90,5 +122,21 @@ namespace Util
     void CheckFalse(bool val, const char* pFile = nullptr, int line = 0)
     {
         CheckTrue(!val, pFile, line);
+    }
+
+    template<typename T>
+    bool IsSorted(const T& container)
+    {
+        T::value_type value = container.front();
+        for (auto& v : container)
+        {
+            if (v < value)
+            {
+                return false;
+            }
+            value = v;
+        }
+
+        return true;
     }
 }
