@@ -82,23 +82,27 @@ void TestHeap()
     }
 }
 
-/*
-void TestBubbleSort()
+
+void TestMergeSort()
 {
     using Type = std::int32_t;
     using namespace Alg;    // For BubbleSort
 
     //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    auto sourceData = Util::GetRandomVector<Type>(20);
-//    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
+    const std::vector<Type> sourceData{ 1, 3, 5, 0, 9,14, 1, 3, 4 };
+    //auto sourceData = Util::GetRandomVector<Type>(20);
+    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
 
-    BubbleSort<std::vector<Type>> sorter;
+    MergeSort<std::vector<Type>> sorter;
     auto data1(sourceData);
     sorter.Sort(data1);
+
+    std::cout << "Sorted: " << Util::ToString(data1) << std::endl;
 
     Util::CheckTrue(Util::IsSorted(data1), __FILE__, __LINE__);
 }
 
+/*
 void TestInsertionSort()
 {
     using Type = std::int32_t;
@@ -130,16 +134,17 @@ void TestSortingAlgorythms()
     using Type = std::int32_t;
     using TContainer = std::vector < Type > ;
     using TSorter = std::unique_ptr < ISort<TContainer> > ;
-    
+
     std::vector<std::unique_ptr<ISort<TContainer>>> algs;
     algs.push_back(TSorter(new BubbleSort<TContainer>()));
     algs.push_back(TSorter(new InsertionSort<TContainer>()));
+    algs.push_back(TSorter(new MergeSort<TContainer>()));
 
     for (auto& sorter : algs)
     {
-        for (auto i = 0; i < 10; i++)
+        for (auto i = 0; i < 100; i++)
         {
-            auto sourceData = Util::GetRandomVector<Type>(20);
+            auto sourceData = Util::GetRandomVector<Type>(200);
             sorter->Sort(sourceData);
 
             if (!Util::IsSorted(sourceData))
@@ -165,10 +170,10 @@ void TestBrackets()
 
 int main(int argc, char** argv)
 {
+    //TestMergeSort();
+
     TestHeap();
-    //TestBubbleSort();
     TestBrackets();
-    //TestInsertionSort();
     TestSortingAlgorythms();
 
     return 0;
