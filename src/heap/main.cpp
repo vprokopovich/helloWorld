@@ -1,6 +1,7 @@
 #include <iostream>     // for std::cout
 #include <cinttypes>    // for type definitions
 #include <vector>
+#include <list>
 #include <memory>
 
 #include "helpers.h"
@@ -89,11 +90,11 @@ void TestMergeSort()
     using namespace Alg;    // For BubbleSort
 
     //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    const std::vector<Type> sourceData{ 1, 3, 5, 0, 9,14, 1, 3, 4 };
+    const std::list<Type> sourceData{ 1, 3, 5, 0, 9,14, 1, 3, 4 };
     //auto sourceData = Util::GetRandomVector<Type>(20);
     std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
 
-    MergeSort<std::vector<Type>> sorter;
+    MergeSort<std::list<Type>> sorter;
     auto data1(sourceData);
     sorter.Sort(data1);
 
@@ -170,7 +171,7 @@ void TestBrackets()
 
 int main(int argc, char** argv)
 {
-    //TestMergeSort();
+    TestMergeSort();
 
     TestHeap();
     TestBrackets();

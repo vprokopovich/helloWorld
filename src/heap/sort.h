@@ -91,11 +91,11 @@ namespace Alg
     public:
         virtual void Sort(TContainer& data) override
         {
-            RecursiveSort(data, 0, data.size() - 1);
+            RecursiveSort(data, data.begin(), data.begin() + data.size()-1);
         }
 
     private:
-        void RecursiveSort(TContainer& data, const std::size_t begin, const std::size_t end)
+        void RecursiveSort(TContainer& data, typename TContainer::iterator begin, typename TContainer::iterator end)
         {
             // If we finally try to sort sequence of 1 element
             // returning because it is already sorted
@@ -108,9 +108,9 @@ namespace Alg
             // in sequence sort them and return
             if ((end - begin) == 1)
             {
-                if (data[begin] > data[end])
+                if (*begin > *end)
                 {
-                    std::swap(data[begin], data[end]);
+                    std::swap(*begin, *end);
                 }
                 return;
             }
@@ -127,14 +127,9 @@ namespace Alg
             }
         }
 
-        void Merge(TContainer& data, const std::size_t begin, const std::size_t middle, const std::size_t end)
+        void Merge(TContainer& data, typename TContainer::iterator begin, typename TContainer::iterator middle, typename TContainer::iterator end)
         {
-            /*
-            3.2. Слияние двух подмассивов в третий результирующий массив.
-            На каждом шаге мы берём меньший из двух первых элементов подмассивов
-            и записываем его в результирующий массив. Счётчики номеров элементов
-            результирующего массива и подмассива, из которого был взят элемент, увеличиваем на 1.
-            */
+            std::cout << "Merge " << *begin << " , " << *middle << " , " << *end << std::endl;
             /*
             * Merging 2 already sorted sequences (left and right) into one:
             * On each step we take smallest element from each sequence
@@ -142,19 +137,19 @@ namespace Alg
             * Counter of sequence (left or right) from which we took an element
             * is increased
             */
-            std::size_t arr1Counter = begin;
-            std::size_t arr2Counter = middle + 1;
+            TContainer::iterator arr1Counter = begin;
+            TContainer::iterator arr2Counter = middle + 1;
             TContainer resultArray(end - begin + 1);
-            for (std::size_t i = 0; i < resultArray.size(); i++)
+            for (TContainer::iterator i = resultArray.begin(); i < resultArray.end(); i++)
             {
                 // If we took all elements from left sequence,
                 // simply copy all elements from right sequence
                 // to result sequence and finalize
                 if (arr1Counter == middle + 1)
                 {
-                    for (std::size_t j = i; j < resultArray.size(); j++)
+                    for (TContainer::iterator j = i; j < resultArray.end(); j++)
                     {
-                        resultArray[j] = data[arr2Counter];
+                        *j = *arr2Counter;
                         arr2Counter++;
                     }
                     break;
@@ -164,9 +159,9 @@ namespace Alg
                 // to result sequence and finalize
                 else if (arr2Counter == end + 1)
                 {
-                    for (std::size_t j = i; j < resultArray.size(); j++)
+                    for (TContainer::iterator j = i; j < resultArray.end(); j++)
                     {
-                        resultArray[j] = data[arr1Counter];
+                        *j = *arr1Counter;
                         arr1Counter++;
                     }
                     break;
@@ -175,23 +170,24 @@ namespace Alg
                 // Comparing current elements from left and right sequences
                 // The smallest one putting to result sequence
                 // moving proper current element to the next one
-                if ((data[arr1Counter] < data[arr2Counter]))
+                if (*arr1Counter < *arr2Counter)
                 {
-                    resultArray[i] = data[arr1Counter];
+                    *i = *arr1Counter;
                     arr1Counter++;
                 }
                 else
                 {
-                    resultArray[i] = data[arr2Counter];
+                    *i = *arr2Counter;
                     arr2Counter++;
                 }
             }
 
             // Merged elements are in result sequences
             // copying them to original sequence
-            for (std::size_t i = 0; i < resultArray.size(); i++)
+            for (TContainer::iterator i = resultArray.begin(); i < resultArray.end(); i++, begin++)
             {
-                data[begin + i] = resultArray[i];
+                //data[begin + i] = resultArray[i];
+                *begin = *i;
             }
         }
     };
