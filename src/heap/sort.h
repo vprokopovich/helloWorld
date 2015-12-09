@@ -6,6 +6,7 @@
 // TODO: QuickSort
 // TODO: InsertionSort
 #include <utility>
+#include <iterator>
 
 namespace Alg
 {
@@ -91,11 +92,11 @@ namespace Alg
     public:
         virtual void Sort(TContainer& data) override
         {
-            RecursiveSort(data, data.begin(), data.begin() + data.size()-1);
+            RecursiveSort(data, data.begin(), (--data.end()));
         }
 
     private:
-        void RecursiveSort(TContainer& data, typename TContainer::iterator begin, typename TContainer::iterator end)
+        void RecursiveSort(TContainer& data, const typename TContainer::iterator begin, const typename TContainer::iterator end)
         {
             // If we finally try to sort sequence of 1 element
             // returning because it is already sorted
@@ -106,7 +107,7 @@ namespace Alg
 
             // no needs to split anymore - we already have 2 elements
             // in sequence sort them and return
-            if ((end - begin) == 1)
+            if (std::distance(begin, end) == 1)
             {
                 if (*begin > *end)
                 {
@@ -118,18 +119,21 @@ namespace Alg
             // Sequence is bigger then 2 elements. Split it and
             // sort left part and right part independently
             {
-                auto middleIdx = (end - begin) / 2 + begin;
-                RecursiveSort(data, begin, middleIdx);   // Sorting left part
-                RecursiveSort(data, middleIdx + 1, end); // Sorting right part
+                // Getting iterator to the middle of range
+                TContainer::iterator middleIt = begin;
+                std::size_t countToMiddle = (std::distance(begin, end)) / 2;
+                std::advance(middleIt, countToMiddle);
+
+                RecursiveSort(data, begin, middleIt);          // Sorting left part
+                RecursiveSort(data, std::next(middleIt), end); // Sorting right part
 
                 // Finally merge results
-                Merge(data, begin, middleIdx, end);
+                Merge(data, begin, middleIt, end);
             }
         }
 
-        void Merge(TContainer& data, typename TContainer::iterator begin, typename TContainer::iterator middle, typename TContainer::iterator end)
+        void Merge(TContainer& data, const typename TContainer::iterator begin, const typename TContainer::iterator middle, const typename TContainer::iterator end)
         {
-            std::cout << "Merge " << *begin << " , " << *middle << " , " << *end << std::endl;
             /*
             * Merging 2 already sorted sequences (left and right) into one:
             * On each step we take smallest element from each sequence
@@ -137,32 +141,32 @@ namespace Alg
             * Counter of sequence (left or right) from which we took an element
             * is increased
             */
-            TContainer::iterator arr1Counter = begin;
-            TContainer::iterator arr2Counter = middle + 1;
-            TContainer resultArray(end - begin + 1);
-            for (TContainer::iterator i = resultArray.begin(); i < resultArray.end(); i++)
+            TContainer::iterator leftIt = begin;
+            TContainer::iterator rightIt = std::next(middle);
+            TContainer resultArray(std::distance(begin, end) + 1);
+            for (TContainer::iterator i = resultArray.begin(); i != resultArray.end(); i++)
             {
                 // If we took all elements from left sequence,
                 // simply copy all elements from right sequence
                 // to result sequence and finalize
-                if (arr1Counter == middle + 1)
+                if (leftIt == data.end() || std::next(middle) == leftIt)
                 {
-                    for (TContainer::iterator j = i; j < resultArray.end(); j++)
+                    for (TContainer::iterator j = i; j != resultArray.end(); j++)
                     {
-                        *j = *arr2Counter;
-                        arr2Counter++;
+                        *j = *rightIt;
+                        rightIt++;
                     }
                     break;
                 }
                 // If we took all elements from right sequence,
                 // simply copy all elements from left sequence
                 // to result sequence and finalize
-                else if (arr2Counter == end + 1)
+                else if (rightIt == data.end() || std::next(end) == rightIt)
                 {
-                    for (TContainer::iterator j = i; j < resultArray.end(); j++)
+                    for (TContainer::iterator j = i; j != resultArray.end(); j++)
                     {
-                        *j = *arr1Counter;
-                        arr1Counter++;
+                        *j = *leftIt;
+                        leftIt++;
                     }
                     break;
                 }
@@ -170,24 +174,24 @@ namespace Alg
                 // Comparing current elements from left and right sequences
                 // The smallest one putting to result sequence
                 // moving proper current element to the next one
-                if (*arr1Counter < *arr2Counter)
+                if (*leftIt < *rightIt)
                 {
-                    *i = *arr1Counter;
-                    arr1Counter++;
+                    *i = *leftIt;
+                    leftIt++;
                 }
                 else
                 {
-                    *i = *arr2Counter;
-                    arr2Counter++;
+                    *i = *rightIt;
+                    rightIt++;
                 }
             }
 
             // Merged elements are in result sequences
             // copying them to original sequence
-            for (TContainer::iterator i = resultArray.begin(); i < resultArray.end(); i++, begin++)
+            TContainer::iterator originalIt = begin;
+            for (TContainer::iterator i = resultArray.begin(); i != resultArray.end(); i++, originalIt++)
             {
-                //data[begin + i] = resultArray[i];
-                *begin = *i;
+                *originalIt = *i;
             }
         }
     };

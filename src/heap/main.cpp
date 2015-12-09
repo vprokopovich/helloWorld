@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <memory>
+#include <iterator> // TODO: remove
 
 #include "helpers.h"
 #include "heap.h"
@@ -90,7 +91,7 @@ void TestMergeSort()
     using namespace Alg;    // For BubbleSort
 
     //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    const std::list<Type> sourceData{ 1, 3, 5, 0, 9,14, 1, 3, 4 };
+    const std::list<Type> sourceData{ 1, 2, 5, 0, 9,14, 1, 3, 4 };
     //auto sourceData = Util::GetRandomVector<Type>(20);
     std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
 
@@ -102,32 +103,6 @@ void TestMergeSort()
 
     Util::CheckTrue(Util::IsSorted(data1), __FILE__, __LINE__);
 }
-
-/*
-void TestInsertionSort()
-{
-    using Type = std::int32_t;
-    using namespace Alg;
-
-    //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    for (auto i = 0; i < 10; i++)
-    {
-        auto sourceData = Util::GetRandomVector<Type>(20);
-
-        InsertionSort<std::vector<Type>> sorter;
-        auto data1(sourceData);
-        sorter.Sort(data1);
-
-        if (!Util::IsSorted(data1))
-        {
-            // Printing an error message
-            Util::CheckTrue(Util::IsSorted(data1), __FILE__, __LINE__);
-            std::cout << "Failed on following sequence: " << Util::ToString(data1) << std::endl;
-        }
-    }
-
-}
-*/
 
 void TestSortingAlgorythms()
 {
@@ -141,9 +116,9 @@ void TestSortingAlgorythms()
     algs.push_back(TSorter(new InsertionSort<TContainer>()));
     algs.push_back(TSorter(new MergeSort<TContainer>()));
 
-    for (auto& sorter : algs)
+    for (auto test = 0; test < 100; test++)
     {
-        for (auto i = 0; i < 100; i++)
+        for (auto& sorter : algs)
         {
             auto sourceData = Util::GetRandomVector<Type>(200);
             sorter->Sort(sourceData);
