@@ -120,7 +120,7 @@ namespace Alg
             // sort left part and right part independently
             {
                 // Getting iterator to the middle of range
-                TContainer::iterator middleIt = begin;
+                typename TContainer::iterator middleIt = begin;
                 std::size_t countToMiddle = (std::distance(begin, end)) / 2;
                 std::advance(middleIt, countToMiddle);
 
@@ -141,17 +141,17 @@ namespace Alg
             * Counter of sequence (left or right) from which we took an element
             * is increased
             */
-            TContainer::iterator leftIt = begin;
-            TContainer::iterator rightIt = std::next(middle);
+            typename TContainer::iterator leftIt = begin;
+            typename TContainer::iterator rightIt = std::next(middle);
             TContainer resultArray(std::distance(begin, end) + 1);
-            for (TContainer::iterator i = resultArray.begin(); i != resultArray.end(); i++)
+            for (typename TContainer::iterator i = resultArray.begin(); i != resultArray.end(); i++)
             {
                 // If we took all elements from left sequence,
                 // simply copy all elements from right sequence
                 // to result sequence and finalize
                 if (leftIt == data.end() || std::next(middle) == leftIt)
                 {
-                    for (TContainer::iterator j = i; j != resultArray.end(); j++)
+                    for (typename TContainer::iterator j = i; j != resultArray.end(); j++)
                     {
                         *j = *rightIt;
                         rightIt++;
@@ -163,7 +163,7 @@ namespace Alg
                 // to result sequence and finalize
                 else if (rightIt == data.end() || std::next(end) == rightIt)
                 {
-                    for (TContainer::iterator j = i; j != resultArray.end(); j++)
+                    for (typename TContainer::iterator j = i; j != resultArray.end(); j++)
                     {
                         *j = *leftIt;
                         leftIt++;
@@ -188,8 +188,8 @@ namespace Alg
 
             // Merged elements are in result sequences
             // copying them to original sequence
-            TContainer::iterator originalIt = begin;
-            for (TContainer::iterator i = resultArray.begin(); i != resultArray.end(); i++, originalIt++)
+            typename TContainer::iterator originalIt = begin;
+            for (typename TContainer::iterator i = resultArray.begin(); i != resultArray.end(); i++, originalIt++)
             {
                 *originalIt = *i;
             }
