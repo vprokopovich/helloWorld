@@ -18,6 +18,7 @@ set(HEADERS
         sort.h
         brackets.h
         streamTest.h
+        measurements.h
 )
 set(SOURCES
         main.cpp

@@ -3,7 +3,6 @@
 #include <vector>
 #include <list>
 #include <memory>
-#include <chrono>
 #include <functional>
 
 #include "helpers.h"
@@ -11,11 +10,12 @@
 #include "sort.h"
 #include "brackets.h"
 #include "streamTest.h"
+#include "measurements.h"
 
 void TestHeap()
 {
     using Type = std::int32_t;
-    using namespace Alg;    // For MyHeap, StdHeap
+    using namespace Alg;
 
     std::vector<Type> sourceData = Util::GetRandomVector<Type>(20);
 
@@ -86,70 +86,6 @@ void TestHeap()
     }
 }
 
-
-void TestMergeSort()
-{
-    using Type = std::int32_t;
-    using namespace Alg;    // For BubbleSort
-
-    //const std::vector<Type> sourceData{ 1, 3, 5, 7, 10, 0, 45, 9, 11, 345, 101 };
-    const std::list<Type> sourceData{ 1, 2, 5, 0, 9,14, 1, 3, 4 };
-    //auto sourceData = Util::GetRandomVector<Type>(20);
-    std::cout << "Source: " << Util::ToString(sourceData) << std::endl;
-
-    MergeSort<std::list<Type>> sorter;
-    auto data1(sourceData);
-    sorter.Sort(data1);
-
-    std::cout << "Sorted: " << Util::ToString(data1) << std::endl;
-
-    Util::CheckTrue(Util::IsSorted(data1), __FILE__, __LINE__);
-}
-
-template <typename T, typename F>
-std::chrono::duration<std::chrono::system_clock::rep, std::chrono::system_clock::period>
-MeasureSmth(F f/*std::function<void(std::vector<T>&)> f*/, T& inputData, std::size_t count = 100)
-{
-    std::chrono::duration<std::chrono::system_clock::rep, std::chrono::system_clock::period> retVal;
-    for (std::size_t i = 0; i < count; i++)
-    {
-        auto dataToProcess = inputData;
-        auto begin = std::chrono::high_resolution_clock::now();
-        f(dataToProcess);
-        auto end = std::chrono::high_resolution_clock::now();
-
-        retVal += end - begin;
-    }
-
-    return retVal / count;
-    /*
-    using Type = std::int32_t;
-    using namespace Alg;
-    const auto sourceData = Util::GetRandomVector<Type>(200);
-
-    MergeSort<std::vector<Type>> sorter;
-    std::vector<Type> data1(sourceData.size()); // Memory allocation is here
-
-    auto measureSort = [&data1, &sourceData, &sorter]()
-    {
-        data1 = sourceData;                     // Copying is here
-
-        auto begin = std::chrono::high_resolution_clock::now();
-        sorter.Sort(data1);
-        auto end = std::chrono::high_resolution_clock::now();
-
-        return (end - begin);
-    };
-
-    for (int i = 0; i < 100; i++)
-    {
-        std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(measureSort()).count() << std::endl;
-    }
-    */
-
-    //std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()
-}
-
 void TestSortingAlgorythms()
 {
     using namespace Alg;
@@ -162,19 +98,16 @@ void TestSortingAlgorythms()
     algs.push_back(TSorter(new InsertionSort<TContainer>()));
     algs.push_back(TSorter(new MergeSort<TContainer>()));
 
-    for (auto test = 0; test < 100; test++)
+    for (auto& sorter : algs)
     {
-        for (auto& sorter : algs)
-        {
-            auto sourceData = Util::GetRandomVector<Type>(200);
-            sorter->Sort(sourceData);
+        auto sourceData = Util::GetRandomVector<Type>(200);
+        sorter->Sort(sourceData);
 
-            if (!Util::IsSorted(sourceData))
-            {
-                // Printing an error message
-                Util::CheckTrue(Util::IsSorted(sourceData), __FILE__, __LINE__);
-                std::cout << "Failed on following sequence: " << Util::ToString(sourceData) << std::endl;
-            }
+        if (!Util::IsSorted(sourceData))
+        {
+            // Printing an error message
+            Util::CheckTrue(Util::IsSorted(sourceData), __FILE__, __LINE__);
+            std::cout << "Failed on following sequence: " << Util::ToString(sourceData) << std::endl;
         }
     }
 }
@@ -196,24 +129,25 @@ void TestStreams()
     s.ReadFromFile();
 }
 
-int main(int argc, char** argv)
+void MeasureSorts()
 {
-    /*
-    TestMergeSort();
-
-    TestHeap();
-    TestBrackets();
-    TestSortingAlgorythms();
-    */
-
-    TestStreams();
-    //MeasureSmth();
-
-    using Type = std::int32_t;
-    using TContainer = std::vector < Type > ;
     const std::size_t elementsCount = 10000;
     const std::size_t repetitionCount = 10;
+
+    using namespace std::chrono;
+    using Type = std::int32_t;
+    using TContainer = std::vector < Type > ;
+
     auto sourceData = Util::GetRandomVector<Type>(elementsCount);
+
+    {
+        auto algStd = [](TContainer& inputData) -> void
+        {
+            std::sort(inputData.begin(), inputData.end());
+        };
+        auto averageDuration = Util::Measure(algStd, sourceData, repetitionCount);
+        std::cout << "Avg std::sort: " << duration_cast<milliseconds>(averageDuration).count() << "ms" << std::endl;
+    }
 
     {
         auto algMerge = [](TContainer& inputData) -> void
@@ -221,8 +155,8 @@ int main(int argc, char** argv)
             Alg::MergeSort<TContainer> sorter;
             sorter.Sort(inputData);
         };
-        auto averageDuration = MeasureSmth(algMerge, sourceData, repetitionCount);
-        std::cout << "Avg Merge vector:  " << std::chrono::duration_cast<std::chrono::milliseconds>(averageDuration).count() << std::endl;
+        auto averageDuration = Util::Measure(algMerge, sourceData, repetitionCount);
+        std::cout << "Avg Merge vector:  " << duration_cast<milliseconds>(averageDuration).count() << "ms" << std::endl;
     }
 
     {
@@ -233,8 +167,8 @@ int main(int argc, char** argv)
             sorter.Sort(inputData);
         };
         TContainerList sourceDataList{ sourceData.begin(), sourceData.end() };
-        auto averageDuration = MeasureSmth(algMerge, sourceDataList, repetitionCount);
-        std::cout << "Avg Merge list:  " << std::chrono::duration_cast<std::chrono::milliseconds>(averageDuration).count() << std::endl;
+        auto averageDuration = Util::Measure(algMerge, sourceDataList, repetitionCount);
+        std::cout << "Avg Merge list:  " << duration_cast<milliseconds>(averageDuration).count() << "ms" << std::endl;
     }
 
     {
@@ -243,8 +177,8 @@ int main(int argc, char** argv)
             Alg::BubbleSort<TContainer> sorter;
             sorter.Sort(inputData);
         };
-        auto averageDuration = MeasureSmth(algBubble, sourceData, repetitionCount);
-        std::cout << "Avg Bubble: " << std::chrono::duration_cast<std::chrono::milliseconds>(averageDuration).count() << std::endl;
+        auto averageDuration = Util::Measure(algBubble, sourceData, repetitionCount);
+        std::cout << "Avg Bubble: " << duration_cast<milliseconds>(averageDuration).count() << "ms" << std::endl;
     }
 
     {
@@ -253,9 +187,18 @@ int main(int argc, char** argv)
             Alg::InsertionSort<TContainer> sorter;
             sorter.Sort(inputData);
         };
-        auto averageDuration = MeasureSmth(algInsertion, sourceData, repetitionCount);
-        std::cout << "Avg Insertion: " << std::chrono::duration_cast<std::chrono::milliseconds>(averageDuration).count() << std::endl;
+        auto averageDuration = Util::Measure(algInsertion, sourceData, repetitionCount);
+        std::cout << "Avg Insertion: " << duration_cast<milliseconds>(averageDuration).count() << "ms" << std::endl;
     }
+}
+
+int main(int argc, char** argv)
+{
+    TestHeap();
+    TestBrackets();
+    TestSortingAlgorythms();
+    TestStreams();
+    MeasureSorts();
 
     return 0;
 }
