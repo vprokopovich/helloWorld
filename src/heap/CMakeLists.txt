@@ -17,10 +17,12 @@ set(HEADERS
         helpers.h
         sort.h
         brackets.h
+        streamTest.h
 )
 set(SOURCES
         main.cpp
         brackets.cpp
+        streamTest.cpp
 )
 #set(LIBRARIES
 #	${Boost_LIBRARIES}
