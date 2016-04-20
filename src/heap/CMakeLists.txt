@@ -19,6 +19,7 @@ set(HEADERS
         brackets.h
         streamTest.h
         measurements.h
+        smallExperiments.h
 )
 set(SOURCES
         main.cpp

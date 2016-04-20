@@ -11,6 +11,13 @@
 #include "brackets.h"
 #include "streamTest.h"
 #include "measurements.h"
+#include "smallExperiments.h"
+
+void RunSmallExperiments()
+{
+    UnexpectedSizeOfClass            example1; example1.Run();
+    DoNotThrowExceptionInConstructor example2; example2.Run();
+}
 
 void TestHeap()
 {
@@ -194,11 +201,20 @@ void MeasureSorts()
 
 int main(int argc, char** argv)
 {
-    TestHeap();
-    TestBrackets();
-    TestSortingAlgorythms();
-    TestStreams();
-    MeasureSorts();
+    try
+    {
+        RunSmallExperiments();
+        TestHeap();
+        TestBrackets();
+        TestSortingAlgorythms();
+        TestStreams();
+        MeasureSorts();
+    }
+    catch (...)
+    {
+        std::cout << "!!!!! If you see this message then something went wrong in one of tests" << std::endl;
+        return 201; // Some value that differs from 0
+    }
 
-    return 0;
+    return 0; // Program is terminated as expected
 }
