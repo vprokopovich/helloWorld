@@ -17,11 +17,11 @@ set(HEADERS
 	#../heap/measurements.h
 	logging.h
 	ITest.h
-	Test1prefixPostfix.h
+	Test1PrefixPostfix.h
 )
 set(SOURCES
 	main.cpp
-	test1prefixPostfix.cpp
+	Test1PrefixPostfix.cpp
 )
 set(LIBRARIES
 )
