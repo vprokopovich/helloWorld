@@ -10,8 +10,8 @@ namespace Util
     {
         using namespace std::chrono;
 #ifdef OPTIMIZATION_FLAG
-        std::cout << "Optimization: " << OPTIMIZATION_FLAG << std::endl;
+        std::cout << "Optimization: " << OPTIMIZATION_FLAG << " ; ";
 #endif
-        std::cout << testName << ": " << duration_cast<milliseconds>(duration).count() << "ms" << std::endl;
+        std::cout << testName << "; " << duration_cast<milliseconds>(duration).count() << " ; ms" << std::endl;
     }
 }
