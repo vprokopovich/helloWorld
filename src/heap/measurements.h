@@ -1,10 +1,13 @@
+#pragma once
+
 #include <chrono>
 
 namespace Util
 {
+    using TTimeType = std::chrono::duration<std::chrono::high_resolution_clock::rep, std::chrono::high_resolution_clock::period>;
+
     template <typename T, typename F>
-    std::chrono::duration<std::chrono::high_resolution_clock::rep, std::chrono::high_resolution_clock::period>
-    Measure(F f, T& inputData, std::size_t count = 100)
+    TTimeType Measure(F f, T& inputData, std::size_t count = 100)
     {
         std::chrono::duration<std::chrono::high_resolution_clock::rep,
                               std::chrono::high_resolution_clock::period> retVal(0);
