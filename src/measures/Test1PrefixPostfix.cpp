@@ -1,5 +1,6 @@
 #include "Test1PrefixPostfix.h"
 
+#include <string>
 #include <sstream>
 #include <limits>
 #include <measurements.h>

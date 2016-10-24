@@ -6,7 +6,7 @@
 
 namespace Util
 {
-    void Print(const TTimeType& duration, const std::string& testName)
+    static void Print(const TTimeType& duration, const std::string& testName)
     {
         using namespace std::chrono;
 #ifdef OPTIMIZATION_FLAG

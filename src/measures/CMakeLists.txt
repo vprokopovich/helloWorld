@@ -18,10 +18,12 @@ set(HEADERS
 	logging.h
 	ITest.h
 	Test1prefixPostfix.h
+	TestZCycleOptimizations.h
 )
 set(SOURCES
 	main.cpp
 	test1prefixPostfix.cpp
+	TestZCycleOptimizations.cpp
 )
 set(LIBRARIES
 )
