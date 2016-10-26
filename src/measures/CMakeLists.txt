@@ -16,18 +16,15 @@ include_directories("../heap")
 set(HEADERS
 	logging.h
 	ITest.h
-	Test1prefixPostfix.h
-	TestZCycleOptimizations.h
-)
-set(SOURCES
-	main.cpp
-	test1prefixPostfix.cpp
-	TestZCycleOptimizations.cpp
 	Test1PrefixPostfix.h
+	Test2TryCatch.h
+	#TestZCycleOptimizations.h
 )
 set(SOURCES
 	main.cpp
 	Test1PrefixPostfix.cpp
+	Test2TryCatch.cpp
+	#TestZCycleOptimizations.cpp
 )
 set(LIBRARIES
 )

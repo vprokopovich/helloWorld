@@ -21,7 +21,7 @@ namespace
 void Test1PrefixPostfix::Run(std::size_t testRepetitions)
 {
     using ArgType = std::uint64_t;
-    const ArgType numberIterations = std::numeric_limits<std::uint32_t>::max() / 16;
+    const ArgType numberIterations = std::numeric_limits<std::uint32_t>::max() / 128;
 
     {
         auto prefixIncrement = [](const ArgType& count) -> void
