@@ -62,16 +62,34 @@ void Test3SIMD::Run(std::size_t testRepetitions)
                 __m128i vectorizedAvg2 = _mm_avg_epu16(vectorizedInput3, vectorizedInput4);
                 __m128i output = _mm_avg_epu16(vectorizedAvg1, vectorizedAvg2);
                 _mm_storeu_si128(reinterpret_cast<__m128i*>(&outputData2[i]), output);
-
-                /*
-                vectorizedInput2 = _mm_avg_epu16(vectorizedInput1, vectorizedInput2);
-                vectorizedInput4 = _mm_avg_epu16(vectorizedInput3, vectorizedInput4);
-                _mm_storeu_si128(reinterpret_cast<__m128i*>(&outputData2[i]), _mm_avg_epu16(vectorizedInput2, vectorizedInput4));
-                */
             }
         };
 
         auto averageDuration = Util::Measure(withSIMD, numberIterations, testRepetitions);
         Util::Print(averageDuration, generateOutputString("Processing with SSE, ", numberIterations));
+    }
+    {
+        auto withSIMDOptimized = [&inputData, &outputData2, &outputDataDebug, &valuesCount](const ArgType& count) -> void
+        {
+            // Some code
+            std::uint16_t counter = 0;
+            std::size_t   step = sizeof(__m128i) / sizeof(ArgType);
+
+            for (std::size_t i = 1; i < (valuesCount - 2); i += step)
+            {
+                std::uint64_t* pElement = &inputData[i - 1];
+                __m128i vectorizedInput1 = _mm_loadu_si128(reinterpret_cast<__m128i*>(pElement++));
+                __m128i vectorizedInput2 = _mm_loadu_si128(reinterpret_cast<__m128i*>(pElement++));
+                __m128i vectorizedInput3 = _mm_loadu_si128(reinterpret_cast<__m128i*>(pElement++));
+                __m128i vectorizedInput4 = _mm_loadu_si128(reinterpret_cast<__m128i*>(pElement++));
+                __m128i vectorizedAvg1 = _mm_avg_epu16(vectorizedInput1, vectorizedInput2);
+                __m128i vectorizedAvg2 = _mm_avg_epu16(vectorizedInput3, vectorizedInput4);
+                __m128i output = _mm_avg_epu16(vectorizedAvg1, vectorizedAvg2);
+                _mm_storeu_si128(reinterpret_cast<__m128i*>(&outputData2[i]), output);
+            }
+        };
+
+        auto averageDuration = Util::Measure(withSIMDOptimized, numberIterations, testRepetitions);
+        Util::Print(averageDuration, generateOutputString("Processing with SSE optimized, ", numberIterations));
     }
 }
