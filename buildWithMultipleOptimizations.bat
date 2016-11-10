@@ -1,14 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set  arrayline[0]=O0
-set  arrayline[1]=O1
-set  arrayline[2]=Og
-set  arrayline[3]=Od
-set  arrayline[4]=Ox
+REM set  arrayline[0]=O0
+REM set  arrayline[1]=O1
+REM set  arrayline[2]=Og
+set  arrayline[0]=Od
+set  arrayline[1]=Ox
 
 ::read it using a FOR /L statement
-for /l %%n in (0,1,4) do (
+for /l %%n in (0,1,1) do (
 	SET OFLAG=!arrayline[%%n]!
 	SET "output=windows!OFLAG!.csv"
 	cd solutions
