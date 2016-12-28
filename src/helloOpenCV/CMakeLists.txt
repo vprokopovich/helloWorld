@@ -29,14 +29,18 @@ set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${OPENCV_DIR})
 FIND_PACKAGE(OpenCV REQUIRED)
 
 set(HEADERS
+		example1.h
+		example2.h
 )
 set(SOURCES
         main.cpp
+		example1.cpp
+		example2.cpp
 )
 set(LIBRARIES
-        opencv_imgproc2413.lib
-        opencv_highgui2413.lib
-        opencv_objdetect2413.lib
+        opencv_imgproc2413d.lib
+        opencv_highgui2413d.lib
+        opencv_objdetect2413d.lib
 )
 
 MESSAGE( STATUS "OPENCV_DIR:         " ${OPENCV_DIR} )
@@ -57,10 +61,13 @@ MACRO (COPY_DLL trgt libname)
     )
 ENDMACRO (COPY_DLL)
 
-COPY_DLL(helloOpenCV opencv_imgproc2413)
-COPY_DLL(helloOpenCV opencv_highgui2413)
-COPY_DLL(helloOpenCV opencv_objdetect2413)
-COPY_DLL(helloOpenCV opencv_core2413)
+COPY_DLL(helloOpenCV opencv_imgproc2413d)
+COPY_DLL(helloOpenCV opencv_highgui2413d)
+COPY_DLL(helloOpenCV opencv_objdetect2413d)
+COPY_DLL(helloOpenCV opencv_core2413d)
+COPY_DLL(helloOpenCV opencv_calib3d2413d)
+COPY_DLL(helloOpenCV opencv_flann2413d)
+COPY_DLL(helloOpenCV opencv_features2d2413d)
 
 
 endif (MSVC)

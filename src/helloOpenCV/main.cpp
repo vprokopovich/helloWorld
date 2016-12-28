@@ -1,10 +1,21 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include "example1.h"
+
 // OPENCV HELLO WORLD
 
 int main(int argc, char** argv)
 {
+    const std::string testImg1("A:\\temp\\res\\Funny-People.jpg");
+    const std::string testImgHomography1("A:\\temp\\res\\homography\\book1.jpg");
+    const std::string testImgHomography2_1("A:\\temp\\res\\homography\\first-image.jpg");
+    const std::string testImgHomography2_2("A:\\temp\\res\\homography\\times-square.jpg");
+
+    Example1 ex1;
+    ex1.HomographyExample1(testImgHomography1);
+    ex1.HomographyExample2(testImgHomography2_1, testImgHomography2_2);
+
     // задаём высоту и ширину картинки
     int height = 620;
     int width = 440;
