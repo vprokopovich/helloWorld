@@ -1,6 +1,9 @@
 solutions/
 products/
 
+#java stuff
+.class
+
 #macos stuff
 .DS_Store
 .AppleDouble
