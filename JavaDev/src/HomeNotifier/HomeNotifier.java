@@ -1,6 +1,10 @@
 package HomeNotifier;
 
+import java.util.ArrayList;
+
+import HomeNotifier.AFP.AFPCar;
 import HomeNotifier.AFP.AFPClient;
+import HomeNotifier.AFP.AFPParserListPage;
 
 public class HomeNotifier
 {
@@ -18,8 +22,11 @@ public class HomeNotifier
 
 		
 		AFPClient afp = new AFPClient();
-		String sWebpage = afp.GetWebPage(AFPClient.Mark.Toyota, AFPClient.Region.Odessa);
+		String sListPage = afp.GetWebPage(AFPClient.Mark.Toyota, AFPClient.Region.Odessa);
 		
-		System.out.println(sWebpage);
+		AFPParserListPage parser = new AFPParserListPage();
+		ArrayList<AFPCar> cars = parser.Parse(sListPage);
+		
+		System.out.println(sListPage);
 	}
 }
