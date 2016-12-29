@@ -1,6 +1,9 @@
 package HomeNotifier;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.jsoup.nodes.Element;
 
 import HomeNotifier.AFP.AFPCar;
 import HomeNotifier.AFP.AFPClient;
@@ -27,6 +30,12 @@ public class HomeNotifier
 		AFPParserListPage parser = new AFPParserListPage();
 		ArrayList<AFPCar> cars = parser.Parse(sListPage);
 		
-		System.out.println(sListPage);
+		for (Iterator<AFPCar> iterator = cars.iterator(); iterator.hasNext();)
+		{
+			AFPCar parsedCar = (AFPCar) iterator.next();
+			System.out.println(parsedCar.ToString());
+		}
+		
+		// System.out.println(sListPage);
 	}
 }
