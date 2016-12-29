@@ -1,13 +1,6 @@
 package HomeNotifier;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.jsoup.nodes.Element;
-
-import HomeNotifier.AFP.AFPCar;
-import HomeNotifier.AFP.AFPClient;
-import HomeNotifier.AFP.AFPParserListPage;
+import HomeNotifier.AFP.AFPEventProvider;
 
 public class HomeNotifier
 {
@@ -23,18 +16,9 @@ public class HomeNotifier
 		// TODO: !! add support of command line options
 		// TODO: !! add XML parser
 
+		AFPEventProvider provider = new AFPEventProvider();
+		provider.Poll();
 		
-		AFPClient afp = new AFPClient();
-		String sListPage = afp.GetWebPage(AFPClient.Mark.Toyota, AFPClient.Region.Odessa);
-		
-		AFPParserListPage parser = new AFPParserListPage();
-		ArrayList<AFPCar> cars = parser.Parse(sListPage);
-		
-		for (Iterator<AFPCar> iterator = cars.iterator(); iterator.hasNext();)
-		{
-			AFPCar parsedCar = (AFPCar) iterator.next();
-			System.out.println(parsedCar.ToString());
-		}
 		
 		// System.out.println(sListPage);
 	}

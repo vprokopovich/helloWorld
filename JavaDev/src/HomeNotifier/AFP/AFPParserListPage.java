@@ -2,7 +2,6 @@ package HomeNotifier.AFP;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,7 +17,8 @@ public class AFPParserListPage
 		Document doc = Jsoup.parse(html);
 		Elements carItems = doc.select("span.show_info"); // a with href
 		
-		for (Iterator<Element> iterator = carItems.iterator(); iterator.hasNext();)
+		Iterator<Element> iterator = carItems.iterator();
+		while (iterator.hasNext())
 		{
 			Element elCarFromTheList = (Element) iterator.next();
 			AFPCar parsedCar = ParseCarFromList(elCarFromTheList);
@@ -35,20 +35,17 @@ public class AFPParserListPage
 	{
 		AFPCar retVal = null;
 		
-		String parsedUrl	= null;
-		String parsedDate	= null;
-		String parsedYear	= null;
-		String parsedHeader = null;
-		String parsedPrice	= null;
-		String parsedMain	= null;
+		String parsedUrl		= null;
+		String parsedDate		= null;
+		String parsedYear		= null;
+		String parsedHeader		= null;
+		String parsedPriceUsd	= null;
+		String parsedMain		= null;
 		
 		// Not yet implemented
 		//String parsedCity			= null;
 		//String parsedEngine		= null;
 		//String parsedKilometers	= null;
-		
-		// This list contains mapping between values that need to be parsed and 
-		// List<Pair<String,String>> pairList = new ArrayList<Pair<String,String>>();
 		
 		Elements carUrl = el.select("a[href]");
 		if (carUrl.size() > 0)
@@ -69,6 +66,14 @@ public class AFPParserListPage
 		{
 			Element e = carYear.get(0);
 			parsedYear = e.text();
+			
+			// Year string has following format: "YYYY г.в."
+			// Getting only year as a string
+			int pos = parsedYear.indexOf(" г.в");
+			if (pos >= 0)
+			{
+				parsedYear = parsedYear.substring(0, pos); 
+			}
 		}
 		
 		Elements carHeader = el.select("span.show_header");
@@ -82,7 +87,24 @@ public class AFPParserListPage
 		if (carPrice.size() > 0)
 		{
 			Element e = carPrice.get(0);
-			parsedPrice = e.text();
+			String parsedPrice = e.text();
+			
+			// Price string has following format: "XXX XXX грн ( $ Y YYY )"
+			// Getting price in hrn and in $ separately
+			/*
+			int posHrn = parsedPrice.indexOf(" грн");
+			if (posHrn >= 0)
+			{
+				String parsedPriceHrn = parsedPrice.substring(0, posHrn); 
+			}
+			*/
+			
+			int posUsd = parsedPrice.indexOf(" $");
+			int posSkobka = parsedPrice.indexOf(" )");
+			if (posUsd >= 0 && posSkobka >= 0)
+			{
+				parsedPriceUsd = parsedPrice.substring(posUsd + 2, posSkobka); // magic number '2' is to skip "$ " 
+			}
 		}
 		
 		Elements carMain = el.select("span.show_main");
@@ -90,21 +112,22 @@ public class AFPParserListPage
 		{
 			Element e = carMain.get(0);
 			parsedMain = e.text();
+			parsedMain = parsedMain.replace(';', ',');
 		}
 		
-		if (null != parsedDate   && 
-			null != parsedYear   && 
-			null != parsedHeader && 
-			null != parsedPrice  && 
+		if (null != parsedDate   	&& 
+			null != parsedYear   	&& 
+			null != parsedHeader 	&& 
+			null != parsedPriceUsd  && 
 			null != parsedMain)
 		{
 			retVal = new AFPCar();
-			retVal._url		= parsedUrl;
-			retVal._date	= parsedDate;
-			retVal._year	= parsedYear;
-			retVal._header	= parsedHeader;
-			retVal._price	= parsedPrice;
-			retVal._main	= parsedMain;
+			retVal._url			= parsedUrl;
+			retVal._date		= parsedDate;
+			retVal._year		= parsedYear;
+			retVal._header		= parsedHeader;
+			retVal._priceUsd	= parsedPriceUsd;
+			retVal._main		= parsedMain;
 		}
 		
 		return retVal;
