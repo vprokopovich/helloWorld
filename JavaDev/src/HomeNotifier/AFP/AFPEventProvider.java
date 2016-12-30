@@ -8,7 +8,16 @@ import HomeNotifier.Common.IEventProvider;
 
 public class AFPEventProvider implements IEventProvider
 {
-	final String carsFilename = "e:\\AllCars.csv";
+	private String				_filename = "";
+	private AFPClient.Mark 		_mark = AFPClient.Mark.Undefined;
+	private AFPClient.Region 	_region = AFPClient.Region.Undefined;
+	
+	public AFPEventProvider(AFPClient.Mark mark, AFPClient.Region region, String filename)
+	{
+		this._mark = mark;
+		this._region = region;
+		this._filename = filename;
+	}
 	
 	@Override
 	public void Poll()
@@ -19,14 +28,14 @@ public class AFPEventProvider implements IEventProvider
 		
 		// Step 1. Getting list of cars from Website
 		AFPClient afp = new AFPClient();
-		String sListPage = afp.GetWebPage(AFPClient.Mark.Toyota, AFPClient.Region.Odessa);
+		String sListPage = afp.GetWebPage(_mark, _region);
 		AFPParserListPage parser = new AFPParserListPage();
 		
 		carsFromWeb = parser.Parse(sListPage);
 		
 		// Step 2. Getting list of cars stored on the filesystem
 		CSVHelper csvHelper = new CSVHelper();
-		ArrayList<String[]> csvLines = csvHelper.Read(carsFilename);
+		ArrayList<String[]> csvLines = csvHelper.Read(_filename);
 		
 		if (!csvLines.isEmpty())
 		{
@@ -36,9 +45,9 @@ public class AFPEventProvider implements IEventProvider
 				String[] line = (String[]) iterator.next();
 				if (line.length == 0) continue;
 				
-				AFPCar carFromFile = new AFPCar();
 				try
 				{
+					AFPCar carFromFile = new AFPCar();
 					carFromFile.ParseFromCSV(line);
 					carsFromFile.add(carFromFile);
 				}
@@ -72,7 +81,7 @@ public class AFPEventProvider implements IEventProvider
 				{
 					AFPCar carFromFile = (AFPCar) iteratorFile.next();
 					
-					if (!carFromFile._url.equals(carFromWeb._url))
+					if (carFromFile._url.equals(carFromWeb._url))
 					{
 						found = true;
 						break;
@@ -88,7 +97,7 @@ public class AFPEventProvider implements IEventProvider
 		// Writing new cars to file
 		if (!newCars.isEmpty())
 		{
-			csvHelper.Write(carsFilename, newCars);
+			csvHelper.Write(_filename, newCars);
 		}
 		
 		System.out.println("New cars added: " + newCars.size());

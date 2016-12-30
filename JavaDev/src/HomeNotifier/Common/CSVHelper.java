@@ -44,7 +44,8 @@ public class CSVHelper
 		FileWriter fw = null;
 		try
 		{
-			fw = new FileWriter(csvFile);
+			final boolean append = true;
+			fw = new FileWriter(csvFile, append);
 			
 			Iterator<AFPCar> iterator = cars.iterator();
 			while (iterator.hasNext())
