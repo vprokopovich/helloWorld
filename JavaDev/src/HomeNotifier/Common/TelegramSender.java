@@ -6,6 +6,7 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.api.objects.WebhookInfo;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.generics.BotSession;
@@ -16,23 +17,14 @@ import org.telegram.telegrambots.updatesreceivers.DefaultWebhook;
 
 public class TelegramSender
 {
-	private TelegramBotsApi    _telegramBotsApi = null;
+	private TelegramBotsApi    _telegramBotsApi    = null;
 	private TelegramBotHandler _telegramBotHandler = null;
-	private BotSession _session = null;
+	final private String       _chatId             = "-1001057953718";
+
 	public void Init()
 	{
-		//ApiContextInitializer.init();
-		//_session = new DefaultBotSession();
-		//_session = ApiContext.getInstance(DefaultBotSession.class);
-		ApiContext.register(BotSession.class, DefaultBotSession.class);
-		//if (!_session.isRunning())
-		{
-			
-			//ApiContext.registerSingleton(BotSession.class, DefaultBotSession.class);
-			//ApiContext.register(Webhook.class, DefaultWebhook.class);
-		}
-		
-		_telegramBotsApi = new TelegramBotsApi();
+		ApiContext.register(BotSession.class, DefaultBotSession.class);	 // ApiContextInitializer.init();
+		_telegramBotsApi    = new TelegramBotsApi();
 		_telegramBotHandler = new TelegramBotHandler();
 		
 	    try
@@ -47,40 +39,43 @@ public class TelegramSender
 	
 	public void SendMessage(String str)
 	{
-		SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
-                .setChatId("-1001057953718")
-                .setText(str);
+		SendMessage message = new SendMessage().setChatId(_chatId).setText(str);
+
+		// Small private class for async handling of response
+		class SendCallback implements SentCallback<Message>
+		{
+			@Override
+			public void onError(BotApiMethod<Message> arg0, TelegramApiRequestException arg1)
+			{
+				Finalize();
+			}
+
+			@Override
+			public void onException(BotApiMethod<Message> arg0, Exception arg1)
+			{
+				Finalize();
+			}
+
+			@Override
+			public void onResult(BotApiMethod<Message> arg0, Message arg1)
+			{
+				Finalize();
+			}
+			
+			private void Finalize()
+			{
+				/*
+				DefaultBotSession session = ApiContext.getInstance(DefaultBotSession.class);
+				if (session.isRunning())
+				{
+					session.stop();
+				}
+				*/
+			}
+		};
 		
 		try
 		{
-			//_telegramBotHandler.sendMessage(message);
-			class SendCallback implements SentCallback<Message>
-			{
-
-				@Override
-				public void onError(BotApiMethod<Message> arg0, TelegramApiRequestException arg1) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onException(BotApiMethod<Message> arg0, Exception arg1) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onResult(BotApiMethod<Message> arg0, Message arg1)
-				{
-					DefaultBotSession session = ApiContext.getInstance(DefaultBotSession.class);
-					if (session.isRunning())
-					{
-						session.stop();
-					}
-					
-				}
-			};
-			
 			SendCallback cb = new SendCallback();
 			_telegramBotHandler.sendMessageAsync(message, cb);
 		}
@@ -94,7 +89,5 @@ public class TelegramSender
 	public void Finalize()
 	{
 		System.out.println("Finalize");
-
-		//_session.stop();
 	}
 }

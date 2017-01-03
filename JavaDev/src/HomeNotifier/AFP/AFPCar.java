@@ -21,6 +21,12 @@ public class AFPCar
 		String retVal = _date + ";" + _year + ";" + _header + ";" + _priceUsd + ";" + _url + ";" + _main;
 		return retVal;
 	}
+	public String ToString()
+	{
+		// TODO: implement full serialization to string
+		String retVal = _date + "\n" + _year + "\n" + _header + "\n" + _priceUsd + "\n" + _url + "\n" + _main + "\n\n";
+		return retVal;
+	}
 	public void ParseFromCSV(String[] line) throws Exception
 	{
 		// TODO: implement full parsing from strings here

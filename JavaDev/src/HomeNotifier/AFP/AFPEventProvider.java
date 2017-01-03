@@ -20,7 +20,7 @@ public class AFPEventProvider implements IEventProvider
 	}
 	
 	@Override
-	public void Poll()
+	public String Poll()
 	{
 		ArrayList<AFPCar> carsFromWeb = new ArrayList<AFPCar>();
 		ArrayList<AFPCar> carsFromFile = new ArrayList<AFPCar>();
@@ -54,7 +54,7 @@ public class AFPEventProvider implements IEventProvider
 				catch (Exception e)
 				{
 					// TODO Write log with error
-					e.printStackTrace();
+					// e.printStackTrace();
 				}
 				
 			}
@@ -101,6 +101,20 @@ public class AFPEventProvider implements IEventProvider
 		}
 		
 		System.out.println("New cars added: " + newCars.size());
+		
+		// Preparing result
+		String res = new String();
+		
+		if (!newCars.isEmpty())
+		{
+			Iterator<AFPCar> iteratorNew  = newCars.iterator();
+			while (iteratorNew.hasNext())
+			{
+				AFPCar newCar = (AFPCar) iteratorNew.next();
+				res += newCar.ToString();
+			}
+		}
+		return res;
 	}
 
 }

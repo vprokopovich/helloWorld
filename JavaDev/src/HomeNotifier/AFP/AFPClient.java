@@ -69,10 +69,6 @@ public class AFPClient
                     if (status >= 200 && status < 300)
                     {
                         HttpEntity entity = response.getEntity();
-                        
-                        //String encoding = entity.getContentEncoding().getValue();
-                        //encoding = encoding == null ? "UTF-8" : encoding;
-
                         return entity != null ? EntityUtils.toString(entity, "UTF-8") : null;
                     }
                     else
