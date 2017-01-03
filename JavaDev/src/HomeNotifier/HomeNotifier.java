@@ -1,6 +1,7 @@
 package HomeNotifier;
 
 import HomeNotifier.AFP.AFPEventProvider;
+import HomeNotifier.Common.TelegramSender;
 
 public class HomeNotifier
 {
@@ -16,9 +17,13 @@ public class HomeNotifier
 		// TODO: !! add support of command line options
 		// TODO: !! add XML parser
 
-		AFPEventProvider provider = new AFPEventProvider();
-		provider.Poll();
+		//AFPEventProvider provider = new AFPEventProvider();
+		//provider.Poll();
 		
+		TelegramSender sender = new TelegramSender();
+		sender.Init();
+		sender.SendMessage("Hello");
+		sender.Finalize();
 		
 		// System.out.println(sListPage);
 	}
