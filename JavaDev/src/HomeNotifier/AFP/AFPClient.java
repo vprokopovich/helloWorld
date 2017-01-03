@@ -14,6 +14,8 @@ public class AFPClient
 {
 	public enum Mark
 	{
+		Undefined(-1),
+		Any(0),
 		Toyota(116),
 		Mazda(76),
 		Honda(53),
@@ -23,18 +25,28 @@ public class AFPClient
 		Skoda(105);
 		
 		Mark(int value) {this._value = value;}
-		int ToInt(){return _value;}
+		String ToString()
+		{
+			if ((_value == Any._value) || (_value == Undefined._value)) return "";
+			return Integer.toString(_value);
+		}
 		private int _value;
 	}
 	public enum Region
 	{
+		Undefined(-1),
+		Any(0),
 		Odessa(81),
 		Kyiv(76),
 		Chernigov(90),
 		Nikolaev(80);
 		
 		Region(int value) {this._value = value;}
-		int ToInt(){return _value;}
+		String ToString()
+		{
+			if ((_value == Any._value) || (_value == Undefined._value)) return "";
+			return Integer.toString(_value);
+		}
 		private int _value;
 	}
 	
@@ -104,8 +116,8 @@ public class AFPClient
 	{
 		// Adding following things to base url: &region=81&mark=116
 		final String retVal = _baseUrl 
-		                    + "&region=" + region.ToInt()
-		                    + "&mark=" + mark.ToInt();
+		                    + "&region=" + region.ToString()
+		                    + "&mark=" + mark.ToString();
 		return retVal;
 	}
 }
