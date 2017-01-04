@@ -26,7 +26,7 @@ public class CSVHelper
         try
         {
         	//FileReader fr = new FileReader();
-        	br = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile), "UTF8"));
+        	br = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile)/*, "UTF-8"*/));
             while ((line = br.readLine()) != null)
             {
                 String[] parsedLine = line.split(cvsSplitBy);

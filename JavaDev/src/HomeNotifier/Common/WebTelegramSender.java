@@ -1,10 +1,14 @@
 package HomeNotifier.Common;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.fluent.Form;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.NameValuePair;
 
 public class WebTelegramSender
 {
@@ -13,15 +17,29 @@ public class WebTelegramSender
 	
 	public void Send(String str)
 	{
+		if ((null == str) || (str.equals("")))
+		{
+			return;
+		}
+		
 		try
 		{
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			nameValuePairs.add(new BasicNameValuePair("text", str));
+			nameValuePairs.add(new BasicNameValuePair("chat_id", _chatId));
+	        
 			Request.Post("https://api.telegram.org/bot" + _token + "/sendMessage")
-			    .bodyForm(Form.form().add("text", str).add("chat_id",  _chatId).build())
-			    .execute().returnContent();
-		} catch (ClientProtocolException e) {
+			       .body(new UrlEncodedFormEntity(nameValuePairs,"UTF-8"))
+			       .execute()
+			       .returnContent();
+		}
+		catch (ClientProtocolException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

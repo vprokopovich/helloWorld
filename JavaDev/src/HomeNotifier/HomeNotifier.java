@@ -1,7 +1,6 @@
 package HomeNotifier;
 
 import HomeNotifier.AFP.*;
-import HomeNotifier.Common.TelegramSender;
 import HomeNotifier.Common.WebTelegramSender;
 
 public class HomeNotifier
@@ -20,14 +19,6 @@ public class HomeNotifier
 		AFPEventProvider providerUkraineToyota = new AFPEventProvider(AFPClient.Mark.Toyota, AFPClient.Region.Any, "e:\\carsUkraineToyota.csv");
 		String toyotaResult = providerUkraineToyota.Poll();
 		
-		/*
-		TelegramSender sender = new TelegramSender();
-		sender.Init();
-		sender.SendMessage(odessaResult);
-		sender.SendMessage(toyotaResult);
-		sender.Finalize();
-		*/
-		
 		WebTelegramSender ws = new WebTelegramSender();
 		if (odessaResult != null)
 		{
@@ -37,7 +28,5 @@ public class HomeNotifier
 		{
 			ws.Send(toyotaResult);
 		}
-		
-		// System.out.println(sListPage);
 	}
 }
